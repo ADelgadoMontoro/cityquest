@@ -1,0 +1,17 @@
+{
+  "name": "@cityquest/identity",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Identity bounded context for users, roles, sessions, and access concerns.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "echo \"Identity context build will be added in a later task.\"",
+    "clean": "echo \"Nothing to clean in packages/contexts/identity yet.\"",
+    "lint": "echo \"Identity context lint configuration will be added in a later task.\"",
+    "test": "echo \"Identity tests will be added when implementation begins.\"",
+    "test:integration": "echo \"Identity integration tests will be added when implementation begins.\"",
+    "test:unit": "echo \"Identity unit tests will be added when implementation begins.\"",
+    "typecheck": "echo \"Identity context typecheck will be enabled when implementation begins.\""
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@cityquest/config",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared repository configuration for CityQuest.",
+  "files": [
+    "typescript"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@cityquest/mobile",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CityQuest mobile application workspace.",
+  "scripts": {
+    "build": "echo \"Mobile build will be added in a later task.\"",
+    "clean": "echo \"Nothing to clean in apps/mobile yet.\"",
+    "dev": "echo \"Mobile app bootstrap is pending Expo initialization.\"",
+    "lint": "echo \"Mobile lint configuration will be added in a later task.\"",
+    "test": "echo \"Mobile tests will be added when Expo is initialized.\"",
+    "test:integration": "echo \"Mobile integration tests will be added when Expo is initialized.\"",
+    "test:unit": "echo \"Mobile unit tests will be added when Expo is initialized.\"",
+    "typecheck": "echo \"Mobile typecheck will be enabled after app bootstrap.\""
+  }
+}

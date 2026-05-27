@@ -1,0 +1,14 @@
+{
+  "name": "@cityquest/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cross-boundary contracts for CityQuest apps and contexts.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "echo \"Contracts package build will be added in a later task.\"",
+    "clean": "echo \"Nothing to clean in packages/contracts yet.\"",
+    "lint": "echo \"Contracts package lint configuration will be added in a later task.\"",
+    "typecheck": "echo \"Contracts package typecheck will be enabled when contracts are added.\""
+  }
+}

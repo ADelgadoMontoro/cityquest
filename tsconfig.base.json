@@ -1,0 +1,56 @@
+{
+  "extends": "./packages/config/typescript/base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@cityquest/shared-kernel": [
+        "packages/shared-kernel/src"
+      ],
+      "@cityquest/shared-kernel/*": [
+        "packages/shared-kernel/src/*"
+      ],
+      "@cityquest/contracts": [
+        "packages/contracts/src"
+      ],
+      "@cityquest/contracts/*": [
+        "packages/contracts/src/*"
+      ],
+      "@cityquest/exploration": [
+        "packages/contexts/exploration/src"
+      ],
+      "@cityquest/exploration/*": [
+        "packages/contexts/exploration/src/*"
+      ],
+      "@cityquest/content": [
+        "packages/contexts/content/src"
+      ],
+      "@cityquest/content/*": [
+        "packages/contexts/content/src/*"
+      ],
+      "@cityquest/identity": [
+        "packages/contexts/identity/src"
+      ],
+      "@cityquest/identity/*": [
+        "packages/contexts/identity/src/*"
+      ],
+      "@cityquest/validation": [
+        "packages/contexts/validation/src"
+      ],
+      "@cityquest/validation/*": [
+        "packages/contexts/validation/src/*"
+      ],
+      "@cityquest/analytics": [
+        "packages/contexts/analytics/src"
+      ],
+      "@cityquest/analytics/*": [
+        "packages/contexts/analytics/src/*"
+      ],
+      "@cityquest/authoring": [
+        "packages/contexts/authoring/src"
+      ],
+      "@cityquest/authoring/*": [
+        "packages/contexts/authoring/src/*"
+      ]
+    }
+  }
+}

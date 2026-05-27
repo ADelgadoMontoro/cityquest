@@ -1,0 +1,17 @@
+{
+  "name": "@cityquest/validation",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Validation bounded context for image, location, and attempt evaluation flows.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "echo \"Validation context build will be added in a later task.\"",
+    "clean": "echo \"Nothing to clean in packages/contexts/validation yet.\"",
+    "lint": "echo \"Validation context lint configuration will be added in a later task.\"",
+    "test": "echo \"Validation tests will be added when implementation begins.\"",
+    "test:integration": "echo \"Validation integration tests will be added when implementation begins.\"",
+    "test:unit": "echo \"Validation unit tests will be added when implementation begins.\"",
+    "typecheck": "echo \"Validation context typecheck will be enabled when implementation begins.\""
+  }
+}

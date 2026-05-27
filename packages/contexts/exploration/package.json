@@ -1,0 +1,17 @@
+{
+  "name": "@cityquest/exploration",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Exploration bounded context for routes, objectives, progression, and unlock flow.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "echo \"Exploration context build will be added in a later task.\"",
+    "clean": "echo \"Nothing to clean in packages/contexts/exploration yet.\"",
+    "lint": "echo \"Exploration context lint configuration will be added in a later task.\"",
+    "test": "echo \"Exploration tests will be added when implementation begins.\"",
+    "test:integration": "echo \"Exploration integration tests will be added when implementation begins.\"",
+    "test:unit": "echo \"Exploration unit tests will be added when implementation begins.\"",
+    "typecheck": "echo \"Exploration context typecheck will be enabled when implementation begins.\""
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@cityquest/admin",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CityQuest admin panel workspace.",
+  "scripts": {
+    "build": "echo \"Admin build will be added in a later task.\"",
+    "clean": "echo \"Nothing to clean in apps/admin yet.\"",
+    "dev": "echo \"Admin app bootstrap is pending Next.js initialization.\"",
+    "lint": "echo \"Admin lint configuration will be added in a later task.\"",
+    "test": "echo \"Admin tests will be added when Next.js is initialized.\"",
+    "test:integration": "echo \"Admin integration tests will be added when Next.js is initialized.\"",
+    "test:unit": "echo \"Admin unit tests will be added when Next.js is initialized.\"",
+    "typecheck": "echo \"Admin typecheck will be enabled after app bootstrap.\""
+  }
+}
