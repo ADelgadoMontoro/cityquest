@@ -1,20 +1,20 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { createWelcomeScreenViewModel } from '@/bootstrap/createWelcomeScreenViewModel';
 import { ScreenContainer } from '@/components/ScreenContainer';
-import { mobileAppConfig } from '@/config/appConfig';
 
 export function WelcomeScreen(): React.JSX.Element {
+  const viewModel = createWelcomeScreenViewModel();
+
   return (
     <ScreenContainer>
       <StatusBar style="dark" />
       <View style={styles.wrapper}>
-        <Text style={styles.eyebrow}>MVP mobile foundation</Text>
-        <Text style={styles.title}>{mobileAppConfig.appName}</Text>
-        <Text style={styles.tagline}>{mobileAppConfig.appTagline}</Text>
-        <Text style={styles.description}>
-          Expo is initialized and ready for the first CityQuest mobile vertical slice.
-        </Text>
+        <Text style={styles.eyebrow}>{viewModel.eyebrow}</Text>
+        <Text style={styles.title}>{viewModel.title}</Text>
+        <Text style={styles.tagline}>{viewModel.tagline}</Text>
+        <Text style={styles.description}>{viewModel.description}</Text>
       </View>
     </ScreenContainer>
   );

@@ -58,24 +58,28 @@ The monorepo uses `npm workspaces` as its initial package management baseline. T
 - `npm run typecheck`
 - `npm run clean`
 
-The scripts are wired at repository and workspace level. Shared formatting, linting, and type-checking are available now. The mobile runtime has already been bootstrapped with Expo, while the admin and API runtimes remain pending.
+The scripts are wired at repository and workspace level. Shared formatting, linting, and type-checking are available now. The mobile runtime has already been bootstrapped with Expo, the admin runtime is now bootstrapped with Next.js, and the API runtime remains pending.
 
 ## Architecture Decisions
 
-Technical decisions are documented as `ADR` files (`Architecture Decision Records`) under [`docs/adr`](C:\Users\trane\OneDrive\Escritorio\CityQuest\docs\adr).
+Technical decisions are documented as `ADR` files (`Architecture Decision Records`) under [`docs/adr`](./docs/adr/README.md).
 
 The DDD structure and boundary rules are documented in:
 
-- [`docs/architecture/ddd.md`](C:\Users\trane\OneDrive\Escritorio\CityQuest\docs\architecture\ddd.md)
+- [`docs/architecture/ddd.md`](./docs/architecture/ddd.md)
 
 The testing strategy is documented in:
 
-- [`docs/architecture/testing.md`](C:\Users\trane\OneDrive\Escritorio\CityQuest\docs\architecture\testing.md)
+- [`docs/architecture/testing.md`](./docs/architecture/testing.md)
 
 The shared development conventions are documented in:
 
-- [`docs/architecture/development-conventions.md`](C:\Users\trane\OneDrive\Escritorio\CityQuest\docs\architecture\development-conventions.md)
+- [`docs/architecture/development-conventions.md`](./docs/architecture/development-conventions.md)
 
 The mobile app runtime decision is documented in:
 
-- [`docs/adr/0006-adopt-expo-for-the-mobile-application.md`](C:\Users\trane\OneDrive\Escritorio\CityQuest\docs\adr\0006-adopt-expo-for-the-mobile-application.md)
+- [`docs/adr/0006-adopt-expo-for-the-mobile-application.md`](./docs/adr/0006-adopt-expo-for-the-mobile-application.md)
+
+The admin panel runtime decision is documented in:
+
+- [`docs/adr/0007-adopt-nextjs-for-the-admin-panel.md`](./docs/adr/0007-adopt-nextjs-for-the-admin-panel.md)

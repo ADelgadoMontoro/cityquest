@@ -4,25 +4,12 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "@cityquest/shared-kernel": [
-        "../../packages/shared-kernel/src"
-      ],
-      "@cityquest/shared-kernel/*": [
-        "../../packages/shared-kernel/src/*"
-      ],
-      "@cityquest/contracts": [
-        "../../packages/contracts/src"
-      ],
-      "@cityquest/contracts/*": [
-        "../../packages/contracts/src/*"
-      ]
+      "@/*": ["src/*"],
+      "@cityquest/shared-kernel": ["../../packages/shared-kernel/src"],
+      "@cityquest/shared-kernel/*": ["../../packages/shared-kernel/src/*"],
+      "@cityquest/contracts": ["../../packages/contracts/src"],
+      "@cityquest/contracts/*": ["../../packages/contracts/src/*"]
     }
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ]
+  "include": ["**/*.ts", "**/*.tsx"]
 }

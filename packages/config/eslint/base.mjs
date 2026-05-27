@@ -1,4 +1,6 @@
 import js from '@eslint/js';
+import nextVitals from 'eslint-config-next/core-web-vitals';
+import nextTs from 'eslint-config-next/typescript';
 import globals from 'globals';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import tseslint from 'typescript-eslint';
@@ -21,6 +23,14 @@ const baseConfig = [
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  ...nextVitals.map((config) => ({
+    ...config,
+    files: ['apps/admin/**/*.{js,mjs,cjs,ts,tsx}'],
+  })),
+  ...nextTs.map((config) => ({
+    ...config,
+    files: ['apps/admin/**/*.{js,mjs,cjs,ts,tsx}'],
+  })),
   eslintConfigPrettier,
   {
     files: ['**/*.{js,mjs,cjs,ts,tsx}'],
@@ -50,6 +60,12 @@ const baseConfig = [
           varsIgnorePattern: '^_',
         },
       ],
+    },
+  },
+  {
+    files: ['apps/admin/**/*.{js,mjs,cjs,ts,tsx}'],
+    rules: {
+      '@next/next/no-html-link-for-pages': 'off',
     },
   },
 ];

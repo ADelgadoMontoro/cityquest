@@ -16,9 +16,9 @@ The project will define a shared development configuration with:
 - shared TypeScript baselines for library, node, and react-style runtimes;
 - a shared ESLint baseline;
 - a shared Prettier baseline;
-- root scripts for lint, format, and typecheck;
+- root scripts for lint, format, typecheck, and intentionally composed development workflows;
 - `.env.example` files for the repository and each app workspace;
-- explicit conventions for imports, aliases, naming, and environment variable prefixes.
+- explicit conventions for imports, aliases, naming, environment variable prefixes, cross-platform scripts, and portable documentation links.
 
 Framework-specific linting and test-tool decisions will be added later when Expo, Next.js, and the API runtime are initialized.
 
@@ -27,4 +27,5 @@ Framework-specific linting and test-tool decisions will be added later when Expo
 - The monorepo gains a consistent development baseline before app bootstrapping begins.
 - New code can follow a shared structure with less friction.
 - Codex and other tooling can operate more reliably on a consistent repository setup.
+- Repository scripts and documentation become more portable across local machines, CI, and GitHub.
 - The configuration stays intentionally lightweight until framework-specific needs become concrete.

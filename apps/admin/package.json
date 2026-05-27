@@ -2,18 +2,29 @@
   "name": "@cityquest/admin",
   "version": "0.1.0",
   "private": true,
-  "description": "CityQuest admin panel workspace.",
+  "description": "CityQuest administrative web panel.",
   "scripts": {
-    "build": "echo \"Admin build will be added in a later task.\"",
-    "clean": "echo \"Nothing to clean in apps/admin yet.\"",
-    "dev": "echo \"Admin app bootstrap is pending Next.js initialization.\"",
+    "build": "next build",
+    "clean": "node -e \"require('fs').rmSync('.next', { recursive: true, force: true })\"",
+    "dev": "next dev --hostname 0.0.0.0 --port 3000",
     "format": "prettier --check . --ignore-unknown",
     "format:write": "prettier --write . --ignore-unknown",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
-    "test": "echo \"Admin tests will be added when Next.js is initialized.\"",
-    "test:integration": "echo \"Admin integration tests will be added when Next.js is initialized.\"",
-    "test:unit": "echo \"Admin unit tests will be added when Next.js is initialized.\"",
+    "start": "next start",
+    "test": "echo \"Admin tests will be added when the first admin features are implemented.\"",
+    "test:integration": "echo \"Admin integration tests will be added when admin workflows are implemented.\"",
+    "test:unit": "echo \"Admin unit tests will be added when admin components and services are implemented.\"",
     "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "next": "16.2.6",
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "eslint-config-next": "16.2.6"
   }
 }

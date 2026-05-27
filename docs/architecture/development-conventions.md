@@ -18,11 +18,18 @@ This document defines the shared development conventions for the CityQuest monor
 - Use semicolons.
 - Keep trailing commas where valid.
 
+## Repository Tooling
+
+- Repository-level scripts should be cross-platform whenever practical.
+- Long-running repository scripts should behave intentionally and must not rely on sequential workspace execution when concurrent behavior is expected.
+- Versioned documentation should use relative links so it remains portable in GitHub, local clones, and other environments.
+
 ## Linting
 
 - ESLint provides the shared code-quality baseline.
 - The initial ruleset stays intentionally lightweight.
 - Framework-specific lint rules should be added when they provide clear value after runtime initialization. Expo is currently using the shared baseline only, and framework-specific mobile linting can be added later if the app starts needing Expo- or React Native-specific rules.
+- The admin panel uses Next.js-specific ESLint rules through the shared repository config so root-level linting stays consistent with the web runtime.
 
 ## Imports and Aliases
 
@@ -30,6 +37,18 @@ This document defines the shared development conventions for the CityQuest monor
 - Prefer relative imports only for nearby files inside the same package boundary.
 - Keep shared-kernel imports rare and intentional.
 - Do not place app-specific logic in `shared-kernel` or `contracts`.
+
+## Design Patterns
+
+- Apply design patterns whenever they add meaningful clarity, extensibility, or testability.
+- Prefer pragmatic patterns over ceremonial ones.
+- Composition root, provider composition, factory functions, view models, adapters, repositories, strategies, and use-case orchestration are preferred when they fit the problem.
+- Do not introduce abstractions only to mimic textbook architecture.
+
+## ADR Discipline
+
+- Any meaningful technical decision should be reflected in `docs/adr`.
+- This includes framework choices, runtime setup, shared tooling, testing strategy, cross-cutting conventions, and non-trivial architectural changes.
 
 ## Naming
 
