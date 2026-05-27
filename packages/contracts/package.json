@@ -8,7 +8,10 @@
   "scripts": {
     "build": "echo \"Contracts package build will be added in a later task.\"",
     "clean": "echo \"Nothing to clean in packages/contracts yet.\"",
-    "lint": "echo \"Contracts package lint configuration will be added in a later task.\"",
-    "typecheck": "echo \"Contracts package typecheck will be enabled when contracts are added.\""
+    "format": "prettier --check . --ignore-unknown",
+    "format:write": "prettier --write . --ignore-unknown",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   }
 }

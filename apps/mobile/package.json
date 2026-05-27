@@ -7,10 +7,13 @@
     "build": "echo \"Mobile build will be added in a later task.\"",
     "clean": "echo \"Nothing to clean in apps/mobile yet.\"",
     "dev": "echo \"Mobile app bootstrap is pending Expo initialization.\"",
-    "lint": "echo \"Mobile lint configuration will be added in a later task.\"",
+    "format": "prettier --check . --ignore-unknown",
+    "format:write": "prettier --write . --ignore-unknown",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
     "test": "echo \"Mobile tests will be added when Expo is initialized.\"",
     "test:integration": "echo \"Mobile integration tests will be added when Expo is initialized.\"",
     "test:unit": "echo \"Mobile unit tests will be added when Expo is initialized.\"",
-    "typecheck": "echo \"Mobile typecheck will be enabled after app bootstrap.\""
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   }
 }

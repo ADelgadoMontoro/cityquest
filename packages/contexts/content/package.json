@@ -8,10 +8,13 @@
   "scripts": {
     "build": "echo \"Content context build will be added in a later task.\"",
     "clean": "echo \"Nothing to clean in packages/contexts/content yet.\"",
-    "lint": "echo \"Content context lint configuration will be added in a later task.\"",
+    "format": "prettier --check . --ignore-unknown",
+    "format:write": "prettier --write . --ignore-unknown",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
     "test": "echo \"Content tests will be added when implementation begins.\"",
     "test:integration": "echo \"Content integration tests will be added when implementation begins.\"",
     "test:unit": "echo \"Content unit tests will be added when implementation begins.\"",
-    "typecheck": "echo \"Content context typecheck will be enabled when implementation begins.\""
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   }
 }

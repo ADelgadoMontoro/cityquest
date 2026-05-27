@@ -48,24 +48,17 @@ The monorepo uses `npm workspaces` as its initial package management baseline. T
 
 - `npm run dev`
 - `npm run build`
+- `npm run format`
+- `npm run format:check`
 - `npm run lint`
+- `npm run lint:fix`
 - `npm run test`
 - `npm run test:unit`
 - `npm run test:integration`
 - `npm run typecheck`
 - `npm run clean`
 
-The scripts are wired at workspace level and currently provide only the repository baseline. The concrete applications will be bootstrapped in later tasks.
-
-## Project Context
-
-For a quick understanding of the project context, review:
-
-- `PROJECT_CONTEXT.md`
-
-The main product source document is still:
-
-- `CityQuest_MVP_documento.pdf`
+The scripts are wired at repository and workspace level. Shared formatting, linting, and type-checking are available now, while the concrete application runtimes will be bootstrapped in later tasks.
 
 ## Architecture Decisions
 
@@ -78,3 +71,7 @@ The DDD structure and boundary rules are documented in:
 The testing strategy is documented in:
 
 - [`docs/architecture/testing.md`](C:\Users\trane\OneDrive\Escritorio\CityQuest\docs\architecture\testing.md)
+
+The shared development conventions are documented in:
+
+- [`docs/architecture/development-conventions.md`](C:\Users\trane\OneDrive\Escritorio\CityQuest\docs\architecture\development-conventions.md)

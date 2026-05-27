@@ -4,6 +4,15 @@
   "private": true,
   "description": "Shared repository configuration for CityQuest.",
   "files": [
-    "typescript"
-  ]
+    "typescript",
+    "eslint",
+    "prettier"
+  ],
+  "scripts": {
+    "clean": "echo \"Nothing to clean in packages/config yet.\"",
+    "format": "prettier --check . --ignore-unknown",
+    "format:write": "prettier --write . --ignore-unknown",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix"
+  }
 }

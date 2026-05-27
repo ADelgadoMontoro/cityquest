@@ -7,10 +7,13 @@
     "build": "echo \"API build will be added in a later task.\"",
     "clean": "echo \"Nothing to clean in apps/api yet.\"",
     "dev": "echo \"API bootstrap is pending backend initialization.\"",
-    "lint": "echo \"API lint configuration will be added in a later task.\"",
+    "format": "prettier --check . --ignore-unknown",
+    "format:write": "prettier --write . --ignore-unknown",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
     "test": "echo \"API tests will be added when the backend is initialized.\"",
     "test:integration": "echo \"API integration tests will be added when the backend is initialized.\"",
     "test:unit": "echo \"API unit tests will be added when the backend is initialized.\"",
-    "typecheck": "echo \"API typecheck will be enabled after app bootstrap.\""
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   }
 }
