@@ -1,1 +1,1 @@
-export {};
+export { healthHandler } from './handlers/healthHandler';

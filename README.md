@@ -58,7 +58,7 @@ The monorepo uses `npm workspaces` as its initial package management baseline. T
 - `npm run typecheck`
 - `npm run clean`
 
-The scripts are wired at repository and workspace level. Shared formatting, linting, and type-checking are available now. The mobile runtime has already been bootstrapped with Expo, the admin runtime is now bootstrapped with Next.js, and the API runtime remains pending.
+The scripts are wired at repository and workspace level. Shared formatting, linting, and type-checking are available now. The mobile runtime has already been bootstrapped with Expo, the admin runtime is bootstrapped with Next.js, and the API runtime is bootstrapped with a Lambda-oriented Node.js and TypeScript foundation.
 
 ## Architecture Decisions
 
@@ -83,3 +83,7 @@ The mobile app runtime decision is documented in:
 The admin panel runtime decision is documented in:
 
 - [`docs/adr/0007-adopt-nextjs-for-the-admin-panel.md`](./docs/adr/0007-adopt-nextjs-for-the-admin-panel.md)
+
+The backend runtime decision is documented in:
+
+- [`docs/adr/0009-adopt-a-lambda-oriented-typescript-backend-foundation.md`](./docs/adr/0009-adopt-a-lambda-oriented-typescript-backend-foundation.md)

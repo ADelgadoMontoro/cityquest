@@ -49,3 +49,4 @@ As a CityQuest rule, any meaningful technical decision with architectural, tooli
 - [ADR-0006: Adopt Expo for the Mobile Application](./0006-adopt-expo-for-the-mobile-application.md)
 - [ADR-0007: Adopt Next.js for the Admin Panel](./0007-adopt-nextjs-for-the-admin-panel.md)
 - [ADR-0008: Apply Pragmatic Design Patterns and Record Technical Decisions](./0008-apply-pragmatic-design-patterns-and-record-technical-decisions.md)
+- [ADR-0009: Adopt a Lambda-Oriented TypeScript Backend Foundation](./0009-adopt-a-lambda-oriented-typescript-backend-foundation.md)

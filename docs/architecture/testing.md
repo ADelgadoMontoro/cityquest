@@ -110,7 +110,7 @@ Tooling is intentionally not finalized yet.
 
 Current direction:
 
-- `Vitest` for package-level and backend unit/integration tests
+- `Vitest` for package-level tests and the backend unit/integration tests in `apps/api`
 - `Testing Library` for the admin web app
 - `React Native Testing Library` for the mobile app
 - `Playwright` for admin end-to-end tests
@@ -122,6 +122,5 @@ The exact testing tools for:
 
 - Expo
 - Next.js
-- API runtime
 
-will be selected when those applications are initialized. That decision should be recorded in future ADRs if it has architectural impact.
+remain to be finalized when those applications start adding real feature tests. The backend runtime decision has now been made in ADR-0009.
