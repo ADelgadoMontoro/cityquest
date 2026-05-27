@@ -1,7 +1,28 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    "noEmit": true
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+      "@cityquest/shared-kernel": [
+        "../../packages/shared-kernel/src"
+      ],
+      "@cityquest/shared-kernel/*": [
+        "../../packages/shared-kernel/src/*"
+      ],
+      "@cityquest/contracts": [
+        "../../packages/contracts/src"
+      ],
+      "@cityquest/contracts/*": [
+        "../../packages/contracts/src/*"
+      ]
+    }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ]
 }

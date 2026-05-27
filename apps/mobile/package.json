@@ -2,18 +2,32 @@
   "name": "@cityquest/mobile",
   "version": "0.1.0",
   "private": true,
-  "description": "CityQuest mobile application workspace.",
+  "description": "CityQuest Expo mobile application.",
+  "main": "index.ts",
   "scripts": {
-    "build": "echo \"Mobile build will be added in a later task.\"",
+    "android": "expo start --android",
+    "build": "echo \"Mobile production builds will be added in a later task.\"",
     "clean": "echo \"Nothing to clean in apps/mobile yet.\"",
-    "dev": "echo \"Mobile app bootstrap is pending Expo initialization.\"",
+    "dev": "expo start",
     "format": "prettier --check . --ignore-unknown",
     "format:write": "prettier --write . --ignore-unknown",
+    "ios": "expo start --ios",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
-    "test": "echo \"Mobile tests will be added when Expo is initialized.\"",
-    "test:integration": "echo \"Mobile integration tests will be added when Expo is initialized.\"",
-    "test:unit": "echo \"Mobile unit tests will be added when Expo is initialized.\"",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "start": "expo start",
+    "test": "echo \"Mobile tests will be added when the first mobile slice is implemented.\"",
+    "test:integration": "echo \"Mobile integration tests will be added after Expo app flows are initialized.\"",
+    "test:unit": "echo \"Mobile unit tests will be added with the first mobile hooks and services.\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "expo": "~56.0.5",
+    "expo-status-bar": "~3.0.8",
+    "react": "19.2.0",
+    "react-native": "0.81.5"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2"
   }
 }

@@ -44,3 +44,4 @@ Create an ADR when a decision has architectural or long-term impact, for example
 - [ADR-0003: Adopt a Lightweight DDD Structure](C:\Users\trane\OneDrive\Escritorio\CityQuest\docs\adr\0003-adopt-a-lightweight-ddd-structure.md)
 - [ADR-0004: Adopt a Test-Guided Development Strategy](C:\Users\trane\OneDrive\Escritorio\CityQuest\docs\adr\0004-adopt-a-test-guided-development-strategy.md)
 - [ADR-0005: Define a Shared Development Configuration](C:\Users\trane\OneDrive\Escritorio\CityQuest\docs\adr\0005-define-a-shared-development-configuration.md)
+- [ADR-0006: Adopt Expo for the Mobile Application](C:\Users\trane\OneDrive\Escritorio\CityQuest\docs\adr\0006-adopt-expo-for-the-mobile-application.md)

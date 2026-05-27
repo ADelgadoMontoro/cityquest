@@ -1,6 +1,7 @@
 # Dependencies
 node_modules/
 .tools/
+.expo-home/
 
 # Build output
 dist/

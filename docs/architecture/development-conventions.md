@@ -7,6 +7,7 @@ This document defines the shared development conventions for the CityQuest monor
 - Shared domain packages should extend the shared library baseline.
 - Node-specific runtimes should extend the shared node baseline.
 - React-based applications should extend the shared react baseline.
+- Expo-based applications may extend `expo/tsconfig.base` directly when Expo tooling requires it. When that happens, the exception should be intentional and documented.
 - Cross-package imports should use the `@cityquest/*` aliases defined at the repository level.
 
 ## Formatting
@@ -21,7 +22,7 @@ This document defines the shared development conventions for the CityQuest monor
 
 - ESLint provides the shared code-quality baseline.
 - The initial ruleset stays intentionally lightweight.
-- Framework-specific lint rules should be added when Expo, Next.js, and the API runtime are initialized.
+- Framework-specific lint rules should be added when they provide clear value after runtime initialization. Expo is currently using the shared baseline only, and framework-specific mobile linting can be added later if the app starts needing Expo- or React Native-specific rules.
 
 ## Imports and Aliases
 

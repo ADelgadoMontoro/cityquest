@@ -58,7 +58,7 @@ The monorepo uses `npm workspaces` as its initial package management baseline. T
 - `npm run typecheck`
 - `npm run clean`
 
-The scripts are wired at repository and workspace level. Shared formatting, linting, and type-checking are available now, while the concrete application runtimes will be bootstrapped in later tasks.
+The scripts are wired at repository and workspace level. Shared formatting, linting, and type-checking are available now. The mobile runtime has already been bootstrapped with Expo, while the admin and API runtimes remain pending.
 
 ## Architecture Decisions
 
@@ -75,3 +75,7 @@ The testing strategy is documented in:
 The shared development conventions are documented in:
 
 - [`docs/architecture/development-conventions.md`](C:\Users\trane\OneDrive\Escritorio\CityQuest\docs\architecture\development-conventions.md)
+
+The mobile app runtime decision is documented in:
+
+- [`docs/adr/0006-adopt-expo-for-the-mobile-application.md`](C:\Users\trane\OneDrive\Escritorio\CityQuest\docs\adr\0006-adopt-expo-for-the-mobile-application.md)
