@@ -14,9 +14,11 @@
     "packages/contexts/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
+    "build": "npm run build:admin && npm run build:api",
+    "build:admin": "npm run build --workspace @cityquest/admin",
+    "build:api": "npm run build --workspace @cityquest/api",
     "clean": "npm run clean --workspaces --if-present",
-    "dev": "concurrently -n mobile,admin \"npm run dev:mobile\" \"npm run dev:admin\"",
+    "dev": "concurrently -n mobile,admin,api \"npm run dev:mobile\" \"npm run dev:admin\" \"npm run dev:api\"",
     "dev:admin": "npm run dev --workspace @cityquest/admin",
     "dev:api": "npm run dev --workspace @cityquest/api",
     "dev:mobile": "npm run dev --workspace @cityquest/mobile",
@@ -24,9 +26,10 @@
     "format:check": "prettier --check . --ignore-unknown",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
-    "test": "npm run test --workspaces --if-present",
-    "test:integration": "npm run test:integration --workspaces --if-present",
-    "test:unit": "npm run test:unit --workspaces --if-present",
+    "test": "npm run test:api",
+    "test:api": "npm run test --workspace @cityquest/api",
+    "test:integration": "npm run test:integration --workspace @cityquest/api",
+    "test:unit": "npm run test:unit --workspace @cityquest/api",
     "typecheck": "npm run typecheck:repo && npm run typecheck:workspaces",
     "typecheck:repo": "tsc -p tsconfig.json --noEmit",
     "typecheck:workspaces": "npm run typecheck --workspaces --if-present"

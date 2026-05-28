@@ -58,7 +58,16 @@ The monorepo uses `npm workspaces` as its initial package management baseline. T
 - `npm run typecheck`
 - `npm run clean`
 
-The scripts are wired at repository and workspace level. Shared formatting, linting, and type-checking are available now. The mobile runtime has already been bootstrapped with Expo, the admin runtime is bootstrapped with Next.js, and the API runtime is bootstrapped with a Lambda-oriented Node.js and TypeScript foundation.
+The scripts are wired at repository and workspace level.
+
+Current behavior:
+
+- `npm run dev` starts the mobile app, admin panel, and API foundation together
+- `npm run build` validates the workspaces that have real production-oriented build steps today: `admin` and `api`
+- `npm run test`, `npm run test:unit`, and `npm run test:integration` currently execute the implemented backend test suite in `apps/api`
+- shared formatting, linting, and type-checking run across the repository
+
+This keeps the root scripts honest: they represent the capabilities that are actually implemented today instead of passing through placeholder workspace commands.
 
 ## Architecture Decisions
 

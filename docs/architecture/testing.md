@@ -91,6 +91,8 @@ Prefer integration tests over excessive mocking.
 
 Use composition, UI, and flow-oriented tests once each app is bootstrapped.
 
+At the current stage of the repository, the only real application-level automated tests live in `apps/api`. Mobile and admin still expose bootstrap placeholders for future test suites rather than claiming coverage they do not yet have.
+
 ## Repository Layout
 
 Each bounded context reserves this structure:

@@ -28,4 +28,5 @@ Framework-specific linting and test-tool decisions will be added later when Expo
 - New code can follow a shared structure with less friction.
 - Codex and other tooling can operate more reliably on a consistent repository setup.
 - Repository scripts and documentation become more portable across local machines, CI, and GitHub.
+- Root development and verification scripts are expected to stay honest about what is truly implemented in the repository at any given stage.
 - The configuration stays intentionally lightweight until framework-specific needs become concrete.

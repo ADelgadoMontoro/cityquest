@@ -1,10 +1,42 @@
 import type { APIGatewayProxyEventV2, Context } from 'aws-lambda';
 import { describe, expect, it } from 'vitest';
 
-import { createHealthcheckSnapshotHandler } from '../../src/handlers/internal/createHealthcheckSnapshotHandler';
+import { healthHandler } from '../../src/handlers/healthHandler';
 
 function createTestEvent(): APIGatewayProxyEventV2 {
-  return {} as APIGatewayProxyEventV2;
+  return {
+    version: '2.0',
+    routeKey: 'GET /health',
+    rawPath: '/health',
+    rawQueryString: '',
+    cookies: [],
+    headers: {
+      host: 'localhost',
+    },
+    queryStringParameters: undefined,
+    requestContext: {
+      accountId: '123456789012',
+      apiId: 'local-api',
+      domainName: 'localhost',
+      domainPrefix: 'localhost',
+      http: {
+        method: 'GET',
+        path: '/health',
+        protocol: 'HTTP/1.1',
+        sourceIp: '127.0.0.1',
+        userAgent: 'vitest',
+      },
+      requestId: 'gateway-request-id',
+      routeKey: 'GET /health',
+      stage: '$default',
+      time: '28/May/2026:09:00:00 +0000',
+      timeEpoch: 1_748_423_200_000,
+    },
+    isBase64Encoded: false,
+    stageVariables: undefined,
+    body: undefined,
+    pathParameters: undefined,
+  };
 }
 
 function createTestContext(): Context {
@@ -26,22 +58,14 @@ function createTestContext(): Context {
 
 describe('healthHandler integration', () => {
   it('maps the health snapshot into a JSON HTTP response', async () => {
-    const handler = createHealthcheckSnapshotHandler({
-      config: {
-        appEnv: 'test',
-        appName: 'CityQuest API',
-        logLevel: 'debug',
-      },
-    });
-
-    const response = await handler(createTestEvent(), createTestContext());
+    const response = await healthHandler(createTestEvent(), createTestContext());
 
     expect(response?.statusCode).toBe(200);
     expect(response?.headers?.['content-type']).toBe('application/json; charset=utf-8');
 
     expect(JSON.parse(response?.body ?? '{}')).toMatchObject({
       app: 'CityQuest API',
-      environment: 'test',
+      environment: 'development',
       requestId: 'integration-test-request',
       status: 'ok',
     });

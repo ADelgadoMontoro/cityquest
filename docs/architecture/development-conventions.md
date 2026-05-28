@@ -23,6 +23,7 @@ This document defines the shared development conventions for the CityQuest monor
 - Repository-level scripts should be cross-platform whenever practical.
 - Long-running repository scripts should behave intentionally and must not rely on sequential workspace execution when concurrent behavior is expected.
 - Versioned documentation should use relative links so it remains portable in GitHub, local clones, and other environments.
+- Root verification scripts should reflect only the capabilities that are genuinely implemented; they must not report success by routing through placeholder workspace commands.
 
 ## Linting
 
