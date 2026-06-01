@@ -10,6 +10,9 @@ build/
 .expo/
 .expo-shared/
 .turbo/
+.wrangler/
+.wrangler-home/
+cdk.out/
 coverage/
 
 # Environment files

@@ -2,25 +2,25 @@
   "name": "@cityquest/api",
   "version": "0.1.0",
   "private": true,
-  "description": "CityQuest serverless API workspace.",
-  "main": "dist/index.js",
+  "description": "CityQuest Cloudflare Workers API workspace.",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "clean": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
-    "dev": "tsx watch --clear-screen=false src/dev/invokeHealthHandler.ts",
+    "build": "npm run build:types && npm run build:worker",
+    "build:types": "tsc -p tsconfig.build.json",
+    "build:worker": "node ./scripts/verify-worker-runtime.mjs",
+    "clean": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true }); require('fs').rmSync('.wrangler', { recursive: true, force: true }); require('fs').rmSync('.wrangler-home', { recursive: true, force: true })\"",
+    "dev": "node ./scripts/run-wrangler.mjs dev",
+    "deploy": "node ./scripts/run-wrangler.mjs deploy",
     "format": "prettier --check . --ignore-unknown",
     "format:write": "prettier --write . --ignore-unknown",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
-    "start": "node dist/dev/invokeHealthHandler.js",
     "test": "vitest run",
     "test:integration": "vitest run tests/integration",
     "test:unit": "vitest run tests/unit",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.156",
-    "tsx": "^4.20.6",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "wrangler": "^4.20.5"
   }
 }

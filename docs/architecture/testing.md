@@ -91,7 +91,7 @@ Prefer integration tests over excessive mocking.
 
 Use composition, UI, and flow-oriented tests once each app is bootstrapped.
 
-At the current stage of the repository, the only real application-level automated tests live in `apps/api`. Mobile and admin still expose bootstrap placeholders for future test suites rather than claiming coverage they do not yet have.
+At the current stage of the repository, the real application-level automated tests live in `apps/api` around the active Cloudflare Workers backend foundation, and the infrastructure workspace has real CDK unit tests in `infra/tests/unit`. Mobile and admin still expose bootstrap placeholders for future test suites rather than claiming coverage they do not yet have.
 
 ## Repository Layout
 
@@ -113,6 +113,7 @@ Tooling is intentionally not finalized yet.
 Current direction:
 
 - `Vitest` for package-level tests and the backend unit/integration tests in `apps/api`
+- `Vitest` with CDK assertions for infrastructure unit tests in `infra`
 - `Testing Library` for the admin web app
 - `React Native Testing Library` for the mobile app
 - `Playwright` for admin end-to-end tests
@@ -125,4 +126,4 @@ The exact testing tools for:
 - Expo
 - Next.js
 
-remain to be finalized when those applications start adding real feature tests. The backend runtime decision has now been made in ADR-0009.
+remain to be finalized when those applications start adding real feature tests. The active backend runtime decision is now documented in ADR-0012.

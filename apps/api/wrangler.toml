@@ -1,0 +1,9 @@
+name = "cityquest-api-dev"
+main = "src/index.ts"
+compatibility_date = "2025-06-01"
+workers_dev = true
+
+[vars]
+CITYQUEST_API_NAME = "cityquest-api"
+CITYQUEST_APP_ENV = "development"
+CITYQUEST_LOG_LEVEL = "info"

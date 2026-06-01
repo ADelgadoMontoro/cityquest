@@ -15,6 +15,8 @@ const baseConfig = [
       '**/.next/**',
       '**/.expo/**',
       '**/.expo-shared/**',
+      '**/.wrangler/**',
+      '**/.wrangler-home/**',
       '**/.turbo/**',
       '**/.vercel/**',
       '**/coverage/**',

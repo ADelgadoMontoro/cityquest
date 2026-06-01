@@ -2,6 +2,24 @@
 
 CityQuest is a gamified cultural tourism platform. This repository is organized as a TypeScript monorepo and adapted to a lightweight DDD structure so the mobile app, admin panel, serverless backend, cloud infrastructure, and domain packages can evolve with clear boundaries from the start.
 
+The current preferred MVP platform direction is:
+
+- `Cloudflare Workers` for backend execution
+- `Cloudflare Pages` for the admin deployment target
+- `Cloudflare D1` for structured data
+- `Cloudflare R2` for media and asset storage
+
+Some AWS-oriented foundations still exist in the repository as earlier exploratory groundwork, but Cloudflare is now the intended forward path for the MVP.
+
+## Start Here
+
+For a quick repository handoff after cloning, read these in order:
+
+1. [`docs/project-context.md`](./docs/project-context.md)
+2. [`docs/adr/README.md`](./docs/adr/README.md)
+3. [`docs/architecture/development-conventions.md`](./docs/architecture/development-conventions.md)
+4. [`docs/architecture/testing.md`](./docs/architecture/testing.md)
+
 ## License
 
 This repository is public for portfolio, evaluation, and reference purposes only. CityQuest is not currently distributed as an open-source project.
@@ -12,7 +30,7 @@ This repository is public for portfolio, evaluation, and reference purposes only
 apps/
   mobile/   # MVP mobile application
   admin/    # Admin web panel
-  api/      # Serverless backend and endpoints
+  api/      # Cloudflare Workers backend and endpoints
 packages/
   config/         # Shared repository configuration
   contracts/      # Cross-app DTOs and integration contracts
@@ -63,8 +81,11 @@ The scripts are wired at repository and workspace level.
 Current behavior:
 
 - `npm run dev` starts the mobile app, admin panel, and API foundation together
-- `npm run build` validates the workspaces that have real production-oriented build steps today: `admin` and `api`
-- `npm run test`, `npm run test:unit`, and `npm run test:integration` currently execute the implemented backend test suite in `apps/api`
+- `npm run build` validates the workspaces that have real production-oriented build steps today: `admin`, `api`, and `infra`
+- the `api` build now includes a local Cloudflare Worker smoke validation instead of only a TypeScript emit step
+- `npm run test` executes the implemented backend and infrastructure test suites
+- `npm run test:unit` executes the implemented backend and infrastructure unit tests
+- `npm run test:integration` currently executes the implemented backend integration suite
 - shared formatting, linting, and type-checking run across the repository
 
 This keeps the root scripts honest: they represent the capabilities that are actually implemented today instead of passing through placeholder workspace commands.
@@ -95,4 +116,16 @@ The admin panel runtime decision is documented in:
 
 The backend runtime decision is documented in:
 
+- [`docs/adr/0012-adopt-cloudflare-workers-as-the-active-api-runtime.md`](./docs/adr/0012-adopt-cloudflare-workers-as-the-active-api-runtime.md)
+
+The earlier Lambda-oriented backend foundation remains documented as historical context in:
+
 - [`docs/adr/0009-adopt-a-lambda-oriented-typescript-backend-foundation.md`](./docs/adr/0009-adopt-a-lambda-oriented-typescript-backend-foundation.md)
+
+The public API Gateway foundation decision is documented in:
+
+- [`docs/adr/0010-use-http-api-for-the-first-public-api-gateway-foundation.md`](./docs/adr/0010-use-http-api-for-the-first-public-api-gateway-foundation.md)
+
+The Cloudflare platform pivot is documented in:
+
+- [`docs/adr/0011-adopt-a-cloudflare-first-mvp-platform-direction.md`](./docs/adr/0011-adopt-a-cloudflare-first-mvp-platform-direction.md)

@@ -1,1 +1,5 @@
-export { healthHandler } from './handlers/healthHandler';
+import { createWorkerEntrypoint } from './bootstrap/createWorkerEntrypoint';
+
+const workerEntrypoint = createWorkerEntrypoint();
+
+export default workerEntrypoint;

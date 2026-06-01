@@ -1,11 +1,8 @@
-import type { JsonHttpResponse } from '../types/http';
-
-export function createJsonResponse(statusCode: number, payload: unknown): JsonHttpResponse {
-  return {
-    statusCode,
+export function createJsonResponse(status: number, payload: unknown): Response {
+  return new Response(JSON.stringify(payload), {
+    status,
     headers: {
       'content-type': 'application/json; charset=utf-8',
     },
-    body: JSON.stringify(payload),
-  };
+  });
 }

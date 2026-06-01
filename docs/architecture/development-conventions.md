@@ -6,6 +6,7 @@ This document defines the shared development conventions for the CityQuest monor
 
 - Shared domain packages should extend the shared library baseline.
 - Node-specific runtimes should extend the shared node baseline.
+- Worker-based runtimes should extend the shared library baseline and add the web runtime libraries they need explicitly.
 - React-based applications should extend the shared react baseline.
 - Expo-based applications may extend `expo/tsconfig.base` directly when Expo tooling requires it. When that happens, the exception should be intentional and documented.
 - Cross-package imports should use the `@cityquest/*` aliases defined at the repository level.

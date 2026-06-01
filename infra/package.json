@@ -1,0 +1,31 @@
+{
+  "name": "@cityquest/infra",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CityQuest AWS infrastructure workspace powered by CDK.",
+  "scripts": {
+    "bootstrap": "cdk bootstrap",
+    "build": "cdk synth",
+    "clean": "node -e \"require('fs').rmSync('cdk.out', { recursive: true, force: true })\"",
+    "deploy": "cdk deploy",
+    "diff": "cdk diff",
+    "dev": "echo \"Infra development uses CDK synth, diff, and deploy commands.\"",
+    "format": "prettier --check . --ignore-unknown",
+    "format:write": "prettier --write . --ignore-unknown",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
+    "synth": "cdk synth",
+    "test": "vitest run",
+    "test:integration": "echo \"Infrastructure deployment-level validations will be added after the first AWS-backed stack is live.\"",
+    "test:unit": "vitest run tests/unit",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "aws-cdk": "^2.1029.1",
+    "aws-cdk-lib": "^2.215.0",
+    "constructs": "^10.4.2",
+    "source-map-support": "^0.5.21",
+    "tsx": "^4.20.6",
+    "vitest": "^3.2.4"
+  }
+}

@@ -1,6 +1,7 @@
 {
-  "extends": "../../packages/config/typescript/node.json",
+  "extends": "../../packages/config/typescript/library.json",
   "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "noEmit": true
   },
   "include": ["src/**/*.ts", "tests/**/*.ts"]

@@ -50,3 +50,6 @@ As a CityQuest rule, any meaningful technical decision with architectural, tooli
 - [ADR-0007: Adopt Next.js for the Admin Panel](./0007-adopt-nextjs-for-the-admin-panel.md)
 - [ADR-0008: Apply Pragmatic Design Patterns and Record Technical Decisions](./0008-apply-pragmatic-design-patterns-and-record-technical-decisions.md)
 - [ADR-0009: Adopt a Lambda-Oriented TypeScript Backend Foundation](./0009-adopt-a-lambda-oriented-typescript-backend-foundation.md)
+- [ADR-0010: Use HTTP API for the First Public API Gateway Foundation](./0010-use-http-api-for-the-first-public-api-gateway-foundation.md)
+- [ADR-0011: Adopt a Cloudflare-First MVP Platform Direction](./0011-adopt-a-cloudflare-first-mvp-platform-direction.md)
+- [ADR-0012: Adopt Cloudflare Workers as the Active API Runtime](./0012-adopt-cloudflare-workers-as-the-active-api-runtime.md)
