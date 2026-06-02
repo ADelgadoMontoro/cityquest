@@ -61,7 +61,7 @@ This document defines the shared development conventions for the CityQuest monor
 ## Environment Variables
 
 - Never commit secrets.
-- Commit only `.env.example` files.
+- Commit only example environment files such as `.env.example` or runtime-specific variants like `.dev.vars.example`.
 - Use `CITYQUEST_` for shared or backend-private variables.
 - Use `NEXT_PUBLIC_` for admin variables exposed to the browser.
 - Use `EXPO_PUBLIC_` for mobile variables exposed to the Expo client.

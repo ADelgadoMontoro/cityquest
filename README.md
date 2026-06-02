@@ -16,9 +16,10 @@ Some AWS-oriented foundations still exist in the repository as earlier explorato
 For a quick repository handoff after cloning, read these in order:
 
 1. [`docs/project-context.md`](./docs/project-context.md)
-2. [`docs/adr/README.md`](./docs/adr/README.md)
-3. [`docs/architecture/development-conventions.md`](./docs/architecture/development-conventions.md)
-4. [`docs/architecture/testing.md`](./docs/architecture/testing.md)
+2. [`docs/cloudflare-setup.md`](./docs/cloudflare-setup.md)
+3. [`docs/adr/README.md`](./docs/adr/README.md)
+4. [`docs/architecture/development-conventions.md`](./docs/architecture/development-conventions.md)
+5. [`docs/architecture/testing.md`](./docs/architecture/testing.md)
 
 ## License
 
@@ -42,9 +43,11 @@ packages/
     validation/   # Geolocation, image validation, attempt handling
     analytics/    # Events, metrics, reporting inputs
     authoring/    # Destination, route, POI, and publish management
-infra/      # Cloud infrastructure and IaC
+infra/      # Historical AWS-oriented infrastructure and IaC groundwork
 docs/       # Technical and architecture documentation
 ```
+
+`infra/` currently remains as historical AWS-oriented groundwork. It is kept for reference and portfolio context, but it is not the active MVP delivery path.
 
 ## DDD Baseline
 
@@ -65,6 +68,10 @@ The monorepo uses `npm workspaces` as its initial package management baseline. T
 ## Base Scripts
 
 - `npm run dev`
+- `npm run api:dev`
+- `npm run api:deploy`
+- `npm run cf:login`
+- `npm run cf:whoami`
 - `npm run build`
 - `npm run format`
 - `npm run format:check`
@@ -81,12 +88,17 @@ The scripts are wired at repository and workspace level.
 Current behavior:
 
 - `npm run dev` starts the mobile app, admin panel, and API foundation together
-- `npm run build` validates the workspaces that have real production-oriented build steps today: `admin`, `api`, and `infra`
+- `npm run api:dev` starts the Cloudflare Worker foundation directly
+- `npm run api:deploy` delegates deployment to the API workspace `Wrangler` workflow
+- `npm run cf:login` and `npm run cf:whoami` expose the active Cloudflare auth flow from the repository root
+- `npm run build` validates the active app workspaces and also keeps the legacy `infra` workspace buildable as historical groundwork
 - the `api` build now includes a local Cloudflare Worker smoke validation instead of only a TypeScript emit step
-- `npm run test` executes the implemented backend and infrastructure test suites
-- `npm run test:unit` executes the implemented backend and infrastructure unit tests
+- `npm run test` executes the implemented active backend test suite and the legacy infrastructure suite
+- `npm run test:unit` executes the implemented active backend unit suite and the legacy infrastructure unit suite
 - `npm run test:integration` currently executes the implemented backend integration suite
 - shared formatting, linting, and type-checking run across the repository
+
+Legacy AWS infrastructure scripts still exist under the `infra` workspace for historical reference. They are not the active MVP path, but they remain part of the default verification flow so the retained groundwork does not silently rot.
 
 This keeps the root scripts honest: they represent the capabilities that are actually implemented today instead of passing through placeholder workspace commands.
 
@@ -122,7 +134,7 @@ The earlier Lambda-oriented backend foundation remains documented as historical 
 
 - [`docs/adr/0009-adopt-a-lambda-oriented-typescript-backend-foundation.md`](./docs/adr/0009-adopt-a-lambda-oriented-typescript-backend-foundation.md)
 
-The public API Gateway foundation decision is documented in:
+The earlier public API Gateway foundation decision remains documented as historical context in:
 
 - [`docs/adr/0010-use-http-api-for-the-first-public-api-gateway-foundation.md`](./docs/adr/0010-use-http-api-for-the-first-public-api-gateway-foundation.md)
 

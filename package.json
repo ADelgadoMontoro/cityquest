@@ -15,11 +15,15 @@
     "packages/contexts/*"
   ],
   "scripts": {
+    "api:deploy": "npm run deploy --workspace @cityquest/api",
+    "api:dev": "npm run dev --workspace @cityquest/api",
     "build": "npm run build:admin && npm run build:api && npm run build:infra",
     "build:admin": "npm run build --workspace @cityquest/admin",
     "build:api": "npm run build --workspace @cityquest/api",
     "build:infra": "npm run build --workspace @cityquest/infra",
     "clean": "npm run clean --workspaces --if-present",
+    "cf:login": "npm run login --workspace @cityquest/api",
+    "cf:whoami": "npm run whoami --workspace @cityquest/api",
     "dev": "concurrently -n mobile,admin,api \"npm run dev:mobile\" \"npm run dev:admin\" \"npm run dev:api\"",
     "dev:admin": "npm run dev --workspace @cityquest/admin",
     "dev:api": "npm run dev --workspace @cityquest/api",

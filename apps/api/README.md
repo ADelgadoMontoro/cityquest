@@ -32,11 +32,19 @@ npm run dev --workspace @cityquest/api
 
 The Worker should start locally on the standard Wrangler development port.
 
+The repository runs `Wrangler` through a small wrapper that keeps local config under `.wrangler-home`. If `npm run whoami` reports that you are not authenticated, run `npm run login` from this workspace or `npm run cf:login` from the repository root.
+
+If you need local variable overrides beyond the defaults committed in `wrangler.toml`, create a local `.dev.vars` file from `.dev.vars.example`.
+
+`Wrangler` reads `.dev.vars` locally. Keep real secrets out of the repository.
+
 To validate the runtime foundation:
 
 ```bash
 curl http://localhost:8787/
 ```
+
+If `8787` is already in use, `Wrangler` may start on a nearby port such as `8788`.
 
 Expected response shape:
 
@@ -47,3 +55,10 @@ Expected response shape:
   "environment": "development"
 }
 ```
+
+## Naming and Platform Notes
+
+- Worker resource naming follows the `cityquest-<environment>-<resource>` convention.
+- The current dev Worker name is `cityquest-dev-api`.
+- `Cloudflare Pages`, `D1`, and future `R2` resources are documented in [`docs/cloudflare-setup.md`](../../docs/cloudflare-setup.md).
+- The AWS-oriented `infra/` workspace remains historical context only and is not part of the active backend workflow.

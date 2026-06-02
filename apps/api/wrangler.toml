@@ -1,4 +1,4 @@
-name = "cityquest-api-dev"
+name = "cityquest-dev-api"
 main = "src/index.ts"
 compatibility_date = "2025-06-01"
 workers_dev = true

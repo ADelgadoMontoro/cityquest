@@ -1,0 +1,3 @@
+CITYQUEST_API_NAME=cityquest-api
+CITYQUEST_APP_ENV=development
+CITYQUEST_LOG_LEVEL=info
