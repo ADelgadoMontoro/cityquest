@@ -20,6 +20,32 @@ function createEnv(overrides: Partial<WorkerRuntimeEnv> = {}): WorkerRuntimeEnv 
 }
 
 describe('workerEntrypoint integration', () => {
+  it('returns a structured health response at /health', async () => {
+    const response = await workerEntrypoint.fetch(
+      new Request('http://localhost/health'),
+      createEnv(),
+      createExecutionContext(),
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toBe('application/json; charset=utf-8');
+    expect(response.headers.get('access-control-allow-origin')).toBe('*');
+
+    const payload = await response.json();
+
+    expect(payload).toEqual({
+      data: {
+        environment: 'development',
+        service: 'cityquest-api',
+        status: 'ok',
+      },
+      meta: {
+        timestamp: expect.any(String),
+      },
+      success: true,
+    });
+  });
+
   it('returns the initialization response at the root route', async () => {
     const response = await workerEntrypoint.fetch(
       new Request('http://localhost/'),
@@ -76,9 +102,46 @@ describe('workerEntrypoint integration', () => {
     });
   });
 
+  it('returns method-not-allowed for unsupported methods on /health', async () => {
+    const response = await workerEntrypoint.fetch(
+      new Request('http://localhost/health', {
+        method: 'POST',
+      }),
+      createEnv(),
+      createExecutionContext(),
+    );
+
+    expect(response.status).toBe(405);
+    expect(response.headers.get('allow')).toBe('GET');
+    expect(response.headers.get('access-control-allow-origin')).toBe('*');
+    await expect(response.json()).resolves.toEqual({
+      error: {
+        code: 'METHOD_NOT_ALLOWED',
+        message: 'Method not allowed.',
+      },
+      success: false,
+    });
+  });
+
   it('handles cors preflight requests centrally', async () => {
     const response = await workerEntrypoint.fetch(
       new Request('http://localhost/unknown', {
+        method: 'OPTIONS',
+      }),
+      createEnv(),
+      createExecutionContext(),
+    );
+
+    expect(response.status).toBe(204);
+    expect(response.headers.get('access-control-allow-origin')).toBe('*');
+    expect(response.headers.get('access-control-allow-methods')).toContain('OPTIONS');
+    expect(response.headers.get('access-control-allow-headers')).toContain('content-type');
+    await expect(response.text()).resolves.toBe('');
+  });
+
+  it('handles cors preflight requests for /health', async () => {
+    const response = await workerEntrypoint.fetch(
+      new Request('http://localhost/health', {
         method: 'OPTIONS',
       }),
       createEnv(),

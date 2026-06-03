@@ -1,5 +1,6 @@
 import { createMethodNotAllowedResponse, createNotFoundResponse } from '../http/errors';
 import { applyCorsHeaders, createPreflightResponse } from '../http/cors';
+import { createHealthRouteHandler } from '../routes/createHealthRouteHandler';
 import { createInitializationRouteHandler } from '../routes/createInitializationRouteHandler';
 import type { ApiRouter, ApiRouteDefinition } from '../types/http';
 import type { ApiRuntimeConfig } from '../config/apiConfig';
@@ -15,6 +16,12 @@ export function createApiRouter({ config }: CreateApiRouterDependencies): ApiRou
         GET: createInitializationRouteHandler({ config }),
       },
       pathname: '/',
+    },
+    {
+      methods: {
+        GET: createHealthRouteHandler({ config }),
+      },
+      pathname: '/health',
     },
   ];
 

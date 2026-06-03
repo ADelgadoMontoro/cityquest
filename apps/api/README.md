@@ -9,6 +9,7 @@ Its role in the monorepo is to expose transport concerns, compose application se
 The current bootstrap intentionally includes:
 
 - a Worker-native TypeScript runtime
+- a formal `GET /health` endpoint for runtime checks
 - a minimal initialization response at the root route
 - a centralized HTTP routing and transport foundation for future API endpoints
 - local development through `Wrangler`
@@ -58,6 +59,28 @@ Expected response shape:
 ```
 
 Unknown routes return a controlled JSON error payload, and `OPTIONS` preflight handling is centralized so future endpoints can reuse the same transport conventions.
+
+To validate the formal healthcheck endpoint:
+
+```bash
+curl http://localhost:8787/health
+```
+
+Expected response shape:
+
+```json
+{
+  "success": true,
+  "data": {
+    "status": "ok",
+    "service": "cityquest-api",
+    "environment": "development"
+  },
+  "meta": {
+    "timestamp": "2026-06-03T12:00:00.000Z"
+  }
+}
+```
 
 ## Naming and Platform Notes
 
