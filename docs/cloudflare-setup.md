@@ -19,11 +19,11 @@ The active Cloudflare direction currently assumes:
 
 - `Workers` for the backend runtime in `apps/api`
 - `Pages` later for the admin deployment target
-- `D1` later for primary structured data
+- `D1` as the next active structured-data integration in `apps/api`
 - `R2` later for controlled media storage
 - `KV` only later for helper or cache-style use cases
 
-Only `Workers` are actively wired today. `Pages`, `D1`, `R2`, and `KV` are future-facing parts of the platform plan and are not provisioned by this repository yet.
+`Workers` are already active. `D1` is the next infrastructure step and should be wired directly into `apps/api`. `Pages`, `R2`, and `KV` remain future-facing parts of the platform plan.
 
 ## Naming Convention
 
@@ -82,6 +82,7 @@ Key rules:
 - keep the Worker configuration directly understandable from `apps/api`
 - do not commit account-specific secrets
 - do not commit account IDs or tokens into versioned files
+- a real dev `D1` `database_id` can be committed in `wrangler.toml` once the database exists, because it is infrastructure configuration rather than a secret
 
 ## Authentication
 
@@ -159,6 +160,47 @@ CITYQUEST_APP_ENV
 CITYQUEST_LOG_LEVEL
 ```
 
+## D1 Workflow
+
+The active repository convention for D1 is:
+
+- development database name: `cityquest-dev-db`
+- Worker binding name: `DB`
+- migration location: `apps/api/migrations/`
+
+The database should be created through the API workspace so the repo stays aligned with the local `Wrangler` wrapper flow.
+
+From the repository root:
+
+```bash
+npm run cf:whoami
+npm run d1:list --workspace @cityquest/api
+```
+
+From `apps/api` directly:
+
+```bash
+npm run whoami
+npm run d1:list
+```
+
+To create the development database for the first time, use the local wrapper:
+
+```bash
+node ./scripts/run-wrangler.mjs d1 create cityquest-dev-db
+```
+
+After creation, copy the Cloudflare-generated `database_id` into `apps/api/wrangler.toml`:
+
+```toml
+[[d1_databases]]
+binding = "DB"
+database_name = "cityquest-dev-db"
+database_id = "<real-cloudflare-database-id>"
+```
+
+Schema and migration contents are deferred to later EVOs. This step is only about provisioning and binding the development database cleanly.
+
 ## Secrets Handling
 
 Never commit real values for:
@@ -177,7 +219,6 @@ If a later task needs real Worker secrets, manage them through Cloudflare secret
 
 This setup does not yet:
 
-- provision `D1`
 - provision `R2`
 - create a `Pages` project
 - implement business API routes

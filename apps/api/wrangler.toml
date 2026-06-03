@@ -3,6 +3,11 @@ main = "src/index.ts"
 compatibility_date = "2025-06-01"
 workers_dev = true
 
+[[d1_databases]]
+binding = "DB"
+database_name = "cityquest-dev-db"
+database_id = "737d8a91-fabc-423d-9a79-f48029ccf68d"
+
 [vars]
 CITYQUEST_API_NAME = "cityquest-api"
 CITYQUEST_APP_ENV = "development"

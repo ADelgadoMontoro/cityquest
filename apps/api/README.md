@@ -19,8 +19,9 @@ The current bootstrap intentionally includes:
 It intentionally does not include:
 
 - business endpoints
-- database access
-- Cloudflare D1, R2, or KV integrations
+- database access logic
+- Cloudflare D1 schema or queries
+- Cloudflare R2 or KV integrations
 - authentication
 - production deployment strategy
 
@@ -82,9 +83,40 @@ Expected response shape:
 }
 ```
 
+## D1 Preparation
+
+This workspace is the owner of the active `Cloudflare D1` integration path.
+
+`EVO-0009` prepares:
+
+- the `DB` Worker binding contract
+- the `apps/api/migrations/` location
+- D1 wrapper commands through the local `Wrangler` runner
+
+Expected development database name:
+
+```txt
+cityquest-dev-db
+```
+
+Expected Worker binding name:
+
+```txt
+DB
+```
+
+Useful commands:
+
+```bash
+npm run whoami
+npm run d1:list
+```
+
+Future schema files should live in [`apps/api/migrations`](./migrations).
+
 ## Naming and Platform Notes
 
 - Worker resource naming follows the `cityquest-<environment>-<resource>` convention.
 - The current dev Worker name is `cityquest-dev-api`.
-- `Cloudflare Pages`, `D1`, and future `R2` resources are documented in [`docs/cloudflare-setup.md`](../../docs/cloudflare-setup.md).
+- The active Cloudflare platform flow, including D1 setup, is documented in [`docs/cloudflare-setup.md`](../../docs/cloudflare-setup.md).
 - The AWS-oriented `infra/` workspace remains historical context only and is not part of the active backend workflow.

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import workerEntrypoint from '../../src';
+import type { D1Database, D1PreparedStatement } from '../../src/types/cloudflare';
 import type { WorkerExecutionContext, WorkerRuntimeEnv } from '../../src/types/worker';
 
 function createExecutionContext(): WorkerExecutionContext {
@@ -10,8 +11,37 @@ function createExecutionContext(): WorkerExecutionContext {
   };
 }
 
+function createPreparedStatementStub(): D1PreparedStatement {
+  return {
+    all: async () => ({
+      meta: {},
+      success: true,
+    }),
+    bind: () => createPreparedStatementStub(),
+    first: async () => null,
+    raw: async () => [],
+    run: async () => ({
+      meta: {},
+      success: true,
+    }),
+  };
+}
+
+function createDatabaseStub(): D1Database {
+  return {
+    batch: async () => [],
+    dump: async () => new ArrayBuffer(0),
+    exec: async () => ({
+      meta: {},
+      success: true,
+    }),
+    prepare: () => createPreparedStatementStub(),
+  };
+}
+
 function createEnv(overrides: Partial<WorkerRuntimeEnv> = {}): WorkerRuntimeEnv {
   return {
+    DB: createDatabaseStub(),
     CITYQUEST_API_NAME: 'cityquest-api',
     CITYQUEST_APP_ENV: 'development',
     CITYQUEST_LOG_LEVEL: 'info',

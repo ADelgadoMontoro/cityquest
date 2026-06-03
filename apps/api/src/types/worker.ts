@@ -1,4 +1,7 @@
+import type { D1Database } from './cloudflare';
+
 export type WorkerRuntimeEnv = {
+  DB: D1Database;
   CITYQUEST_API_NAME?: string;
   CITYQUEST_APP_ENV?: string;
   CITYQUEST_LOG_LEVEL?: string;
