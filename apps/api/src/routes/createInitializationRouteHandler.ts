@@ -1,6 +1,7 @@
 import type { ApiRuntimeConfig } from '../config/apiConfig';
+import { createJsonResponse } from '../http/responses';
 import { createInitializationSnapshotService } from '../services/createInitializationSnapshotService';
-import { createJsonResponse } from '../utils/createJsonResponse';
+import type { ApiRouteHandler } from '../types/http';
 
 type CreateInitializationRouteHandlerDependencies = {
   config: ApiRuntimeConfig;
@@ -13,6 +14,9 @@ export function createInitializationRouteHandler({
     config,
   });
 
-  return async (): Promise<Response> =>
-    createJsonResponse(200, initializationSnapshotService.execute());
+  const handler: ApiRouteHandler = async (_request, _context) => {
+    return createJsonResponse(200, initializationSnapshotService.execute());
+  };
+
+  return handler;
 }

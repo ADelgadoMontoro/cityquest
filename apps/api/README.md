@@ -10,6 +10,7 @@ The current bootstrap intentionally includes:
 
 - a Worker-native TypeScript runtime
 - a minimal initialization response at the root route
+- a centralized HTTP routing and transport foundation for future API endpoints
 - local development through `Wrangler`
 - build-time Worker runtime verification through a local Wrangler smoke check
 - unit and integration test wiring for backend evolution
@@ -55,6 +56,8 @@ Expected response shape:
   "environment": "development"
 }
 ```
+
+Unknown routes return a controlled JSON error payload, and `OPTIONS` preflight handling is centralized so future endpoints can reuse the same transport conventions.
 
 ## Naming and Platform Notes
 
