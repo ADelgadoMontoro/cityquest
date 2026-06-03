@@ -110,9 +110,13 @@ Useful commands:
 ```bash
 npm run whoami
 npm run d1:list
+npm run d1:migrations:apply:local
+npm run d1:migrations:apply:remote
 ```
 
 Future schema files should live in [`apps/api/migrations`](./migrations).
+
+The first schema migration is [`0001_initial_content_schema.sql`](./migrations/0001_initial_content_schema.sql). It defines the initial content backbone only and intentionally defers users, progress, analytics, and demo-mode persistence.
 
 ## Naming and Platform Notes
 

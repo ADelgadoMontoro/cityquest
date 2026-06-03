@@ -53,3 +53,4 @@ As a CityQuest rule, any meaningful technical decision with architectural, tooli
 - [ADR-0010: Use HTTP API for the First Public API Gateway Foundation](./0010-use-http-api-for-the-first-public-api-gateway-foundation.md)
 - [ADR-0011: Adopt a Cloudflare-First MVP Platform Direction](./0011-adopt-a-cloudflare-first-mvp-platform-direction.md)
 - [ADR-0012: Adopt Cloudflare Workers as the Active API Runtime](./0012-adopt-cloudflare-workers-as-the-active-api-runtime.md)
+- [ADR-0013: Adopt an Initial D1 Persistence and Migration Strategy](./0013-adopt-an-initial-d1-persistence-and-migration-strategy.md)

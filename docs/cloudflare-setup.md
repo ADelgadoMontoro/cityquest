@@ -174,7 +174,7 @@ From the repository root:
 
 ```bash
 npm run cf:whoami
-npm run d1:list --workspace @cityquest/api
+npm run d1:list
 ```
 
 From `apps/api` directly:
@@ -200,6 +200,28 @@ database_id = "<real-cloudflare-database-id>"
 ```
 
 Schema and migration contents are deferred to later EVOs. This step is only about provisioning and binding the development database cleanly.
+
+The first real schema migration now lives at:
+
+```text
+apps/api/migrations/0001_initial_content_schema.sql
+```
+
+To apply the current migration set from the repository root:
+
+```bash
+npm run d1:migrations:apply:local
+npm run d1:migrations:apply:remote
+```
+
+From `apps/api` directly:
+
+```bash
+npm run d1:migrations:apply:local
+npm run d1:migrations:apply:remote
+```
+
+That migration intentionally covers only the first content slice of the MVP. Identity, progress, analytics, and demo-mode persistence remain later concerns.
 
 ## Secrets Handling
 
