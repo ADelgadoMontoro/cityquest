@@ -3,9 +3,11 @@ import type { WelcomeScreenViewModel } from '@/types/welcome';
 
 export function createWelcomeScreenViewModel(): WelcomeScreenViewModel {
   return {
-    eyebrow: 'MVP mobile foundation',
+    eyebrow: 'MVP mobile navigation',
     title: mobileAppConfig.appName,
     tagline: mobileAppConfig.appTagline,
-    description: 'Expo is initialized and ready for the first CityQuest mobile vertical slice.',
+    description:
+      'The app can now move through the real CityQuest MVP flow: welcome, destinations, route detail, and current objective.',
+    primaryActionLabel: 'Enter MVP Flow',
   };
 }

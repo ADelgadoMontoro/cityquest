@@ -3,4 +3,5 @@ export type WelcomeScreenViewModel = {
   title: string;
   tagline: string;
   description: string;
+  primaryActionLabel: string;
 };

@@ -2,9 +2,14 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { createWelcomeScreenViewModel } from '@/bootstrap/createWelcomeScreenViewModel';
+import { PrimaryButton } from '@/components/PrimaryButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
 
-export function WelcomeScreen(): React.JSX.Element {
+type WelcomeScreenProps = {
+  onStart: () => void;
+};
+
+export function WelcomeScreen({ onStart }: WelcomeScreenProps): React.JSX.Element {
   const viewModel = createWelcomeScreenViewModel();
 
   return (
@@ -15,6 +20,7 @@ export function WelcomeScreen(): React.JSX.Element {
         <Text style={styles.title}>{viewModel.title}</Text>
         <Text style={styles.tagline}>{viewModel.tagline}</Text>
         <Text style={styles.description}>{viewModel.description}</Text>
+        <PrimaryButton label={viewModel.primaryActionLabel} onPress={onStart} />
       </View>
     </ScreenContainer>
   );
@@ -26,6 +32,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 24,
+    gap: 8,
     backgroundColor: '#f8f4ec',
   },
   eyebrow: {
