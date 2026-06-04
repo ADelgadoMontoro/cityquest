@@ -29,6 +29,8 @@ The current real product slice in the repository is:
 - POI `Cathedral of Jaén`
 - POI `Arab Baths of Jaén`
 - published visual objectives for both POIs
+- public `GET /destinations` endpoint
+- public `GET /routes/jaen-echoes-of-stone` endpoint
 
 That means the project has already moved beyond backend foundation only: the active API and D1 database now contain real MVP content that later endpoints and screens can consume.
 
@@ -39,10 +41,10 @@ These percentages are approximate engineering snapshots, not formal project acco
 | Area | Progress | Notes |
 | --- | --- | --- |
 | Platform / Infra | `[########--] 80%` | Cloudflare direction, Worker runtime, D1 binding, migrations, and verification flow are in place. |
-| API / Data | `[######----] 60%` | Healthcheck, HTTP foundation, schema, and first seeded content slices are done; public read endpoints are next. |
+| API / Data | `[#######---] 70%` | Healthcheck, HTTP foundation, schema, seeds, destinations listing, and first route detail endpoint are done. |
 | Mobile | `[##--------] 20%` | Expo foundation exists, but real backend-driven product flows are still pending. |
 | Admin | `[##--------] 20%` | Next.js foundation exists, but real content management flows are still pending. |
-| Overall MVP | `[#####-----] 45%` | Foundations are solid; the next gains come from public endpoints and real app consumption. |
+| Overall MVP | `[#####-----] 50%` | Foundations and first public content endpoints are in place; the next gains come from real app consumption. |
 
 ## Start Here
 
@@ -147,12 +149,14 @@ The repository already gives you:
 
 - a running `Cloudflare Workers` backend in `apps/api`
 - a formal `GET /health` endpoint
+- a public `GET /destinations` endpoint
+- a public `GET /routes/jaen-echoes-of-stone` endpoint
 - D1 schema and migration flow
 - real seeded MVP content for `Jaén: Echoes of Stone`
 - backend unit and integration tests
 - mobile and admin foundations ready to consume future public endpoints
 
-The next high-value engineering step is not more platform bootstrapping. It is exposing the seeded content through public read endpoints and then consuming that data from mobile and admin.
+The next high-value engineering step is no longer exposing the first public endpoints. It is consuming that real seeded content from mobile and admin, and then layering gameplay, progress, and unlock flows on top.
 
 ## Architecture Decisions
 

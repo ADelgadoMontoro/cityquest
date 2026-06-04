@@ -12,6 +12,8 @@ The current bootstrap intentionally includes:
 - a formal `GET /health` endpoint for runtime checks
 - a minimal initialization response at the root route
 - a centralized HTTP routing and transport foundation for future API endpoints
+- a public `GET /destinations` endpoint backed by D1
+- a public `GET /routes/jaen-echoes-of-stone` endpoint backed by D1
 - local development through `Wrangler`
 - build-time Worker runtime verification through a local Wrangler smoke check
 - unit and integration test wiring for backend evolution
@@ -83,6 +85,18 @@ Expected response shape:
 }
 ```
 
+To validate the public destinations listing:
+
+```bash
+curl http://localhost:8787/destinations
+```
+
+To validate the current real route detail payload:
+
+```bash
+curl http://localhost:8787/routes/jaen-echoes-of-stone
+```
+
 ## D1 Preparation
 
 This workspace is the owner of the active `Cloudflare D1` integration path.
@@ -127,6 +141,11 @@ The first baseline content seed is [`0003_seed_jaen_and_route.sql`](./migrations
 [`0006_seed_catedral_de_jaen_poi_and_objectives.sql`](./migrations/0006_seed_catedral_de_jaen_poi_and_objectives.sql) introduces the first real POI slice for `Jaén: Echoes of Stone`: `Cathedral of Jaén` plus its first five published visual objectives.
 
 [`0007_seed_banos_arabes_poi_and_objectives.sql`](./migrations/0007_seed_banos_arabes_poi_and_objectives.sql) then introduces the second real POI slice for `Jaén: Echoes of Stone`: `Arab Baths of Jaén` plus its first five published visual objectives.
+
+The first public read endpoints now sit on top of that seeded baseline:
+
+- `GET /destinations`
+- `GET /routes/jaen-echoes-of-stone`
 
 ## Naming and Platform Notes
 
