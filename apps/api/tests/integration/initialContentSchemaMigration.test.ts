@@ -31,6 +31,10 @@ const catedralSeedMigrationFilePath = resolve(
   migrationsDirectoryPath,
   '0006_seed_catedral_de_jaen_poi_and_objectives.sql',
 );
+const banosArabesSeedMigrationFilePath = resolve(
+  migrationsDirectoryPath,
+  '0007_seed_banos_arabes_poi_and_objectives.sql',
+);
 
 function readMigrationFile(filePath: string) {
   return readFileSync(filePath, 'utf-8');
@@ -61,6 +65,7 @@ describe('initial content schema migration', () => {
     expect(existsSync(clearJaenCoverImageMigrationFilePath)).toBe(true);
     expect(existsSync(addVisualObjectivesIndoorModeMigrationFilePath)).toBe(true);
     expect(existsSync(catedralSeedMigrationFilePath)).toBe(true);
+    expect(existsSync(banosArabesSeedMigrationFilePath)).toBe(true);
   });
 
   it('defines the core MVP content tables', () => {
@@ -167,6 +172,21 @@ describe('initial content schema migration', () => {
     expect(migration).toContain("'tumba-don-alonso-suarez'");
   });
 
+  it('defines a dedicated Arab Baths POI and objectives seed migration', () => {
+    const migration = readMigrationFile(banosArabesSeedMigrationFilePath);
+
+    expect(migration).toContain('INSERT INTO pois');
+    expect(migration).toContain("'poi-banos-arabes-jaen'");
+    expect(migration).toContain("'banos-arabes-jaen'");
+    expect(migration).toContain("'Arab Baths of Jaén'");
+    expect(migration).toContain('INSERT INTO visual_objectives');
+    expect(migration).toContain("'fachada-palacio-villardompardo'");
+    expect(migration).toContain("'pinturas-recibidor-banos-arabes'");
+    expect(migration).toContain("'piscina-sala-templada-banos-arabes'");
+    expect(migration).toContain("'columnas-ala-rey-ali'");
+    expect(migration).toContain("'tinajas-agua-sala-caliente'");
+  });
+
   it('executes the migration set successfully in SQLite', () => {
     const database = createSchemaSnapshot();
 
@@ -204,7 +224,7 @@ describe('initial content schema migration', () => {
     database.close();
   });
 
-  it('seeds Jaen, the MVP route, and the first Catedral slice', () => {
+  it('seeds Jaen, the MVP route, and the first two POI slices', () => {
     const database = createSchemaSnapshot();
 
     const destinations = database
@@ -272,10 +292,14 @@ describe('initial content schema migration', () => {
     const visualObjectives = database
       .prepare(
         `
-          SELECT id, poi_id, slug, title, description, status, target_type,
-                 gps_radius_meters, difficulty, indoor_mode, display_order
+          SELECT visual_objectives.id, visual_objectives.poi_id, visual_objectives.slug,
+                 visual_objectives.title, visual_objectives.description, visual_objectives.status,
+                 visual_objectives.target_type,
+                 visual_objectives.gps_radius_meters, visual_objectives.difficulty,
+                 visual_objectives.indoor_mode, visual_objectives.display_order
           FROM visual_objectives
-          ORDER BY display_order, title
+          INNER JOIN pois ON pois.id = visual_objectives.poi_id
+          ORDER BY pois.display_order, visual_objectives.display_order, visual_objectives.title
         `,
       )
       .all() as Array<{
@@ -342,6 +366,21 @@ describe('initial content schema migration', () => {
         name: 'Cathedral of Jaén',
         route_id: 'route-jaen-echoes-of-stone',
         slug: 'catedral-de-jaen',
+        status: 'published',
+      },
+      {
+        access_notes:
+          'Located inside the Palace of Villardompardo, in Plaza Santa Luisa de Marillac. Interior access is required, so opening hours should be checked before visiting.',
+        description:
+          'One of Jaén’s most remarkable heritage sites, hidden beneath the Palace of Villardompardo and preserving the memory of the city’s Andalusian past.',
+        display_order: 1,
+        id: 'poi-banos-arabes-jaen',
+        indoor_mode: 1,
+        latitude: 37.7710822,
+        longitude: -3.7940612,
+        name: 'Arab Baths of Jaén',
+        route_id: 'route-jaen-echoes-of-stone',
+        slug: 'banos-arabes-jaen',
         status: 'published',
       },
     ]);
@@ -416,6 +455,76 @@ describe('initial content schema migration', () => {
         status: 'published',
         target_type: 'tomb',
         title: 'Tomb of Don Alonso Suárez',
+      },
+      {
+        description:
+          'Find the exterior façade of the Palace of Villardompardo, the historic building that houses the Arab Baths of Jaén beneath its walls.',
+        difficulty: 'easy',
+        display_order: 0,
+        gps_radius_meters: 20,
+        id: 'objective-banos-arabes-jaen-fachada-palacio-villardompardo',
+        indoor_mode: 0,
+        poi_id: 'poi-banos-arabes-jaen',
+        slug: 'fachada-palacio-villardompardo',
+        status: 'published',
+        target_type: 'facade',
+        title: 'Palace of Villardompardo Façade',
+      },
+      {
+        description:
+          'Find the original paintings in the entrance area of the Arab Baths, before reaching the cold room, where visitors once prepared to access the bathing spaces.',
+        difficulty: 'easy',
+        display_order: 1,
+        gps_radius_meters: 3,
+        id: 'objective-banos-arabes-jaen-pinturas-recibidor-banos-arabes',
+        indoor_mode: 1,
+        poi_id: 'poi-banos-arabes-jaen',
+        slug: 'pinturas-recibidor-banos-arabes',
+        status: 'published',
+        target_type: 'decorative_painting',
+        title: 'Arab Baths Entrance Paintings',
+      },
+      {
+        description:
+          'Find the central pool in the warm room of the Arab Baths, the space where visitors would have spent most of their time during the bathing ritual.',
+        difficulty: 'easy',
+        display_order: 2,
+        gps_radius_meters: 3,
+        id: 'objective-banos-arabes-jaen-piscina-sala-templada-banos-arabes',
+        indoor_mode: 1,
+        poi_id: 'poi-banos-arabes-jaen',
+        slug: 'piscina-sala-templada-banos-arabes',
+        status: 'published',
+        target_type: 'pool',
+        title: 'Warm Room Central Pool',
+      },
+      {
+        description:
+          'Find the columns in the king’s wing of the Arab Baths, the place linked to the death of King Ali and the legend of his lingering ghost.',
+        difficulty: 'medium',
+        display_order: 3,
+        gps_radius_meters: 2,
+        id: 'objective-banos-arabes-jaen-columnas-ala-rey-ali',
+        indoor_mode: 1,
+        poi_id: 'poi-banos-arabes-jaen',
+        slug: 'columnas-ala-rey-ali',
+        status: 'published',
+        target_type: 'architectural_detail',
+        title: 'King Ali’s Wing Columns',
+      },
+      {
+        description:
+          'Find the water jars in the hot room of the Arab Baths, the most therapeutic space of the complex, associated with medicinal bathing practices inspired by Galenic tradition.',
+        difficulty: 'easy',
+        display_order: 4,
+        gps_radius_meters: 3,
+        id: 'objective-banos-arabes-jaen-tinajas-agua-sala-caliente',
+        indoor_mode: 1,
+        poi_id: 'poi-banos-arabes-jaen',
+        slug: 'tinajas-agua-sala-caliente',
+        status: 'published',
+        target_type: 'historic_object',
+        title: 'Hot Room Water Jars',
       },
     ]);
 

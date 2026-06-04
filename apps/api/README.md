@@ -126,6 +126,8 @@ The first baseline content seed is [`0003_seed_jaen_and_route.sql`](./migrations
 
 [`0006_seed_catedral_de_jaen_poi_and_objectives.sql`](./migrations/0006_seed_catedral_de_jaen_poi_and_objectives.sql) introduces the first real POI slice for `Jaén: Echoes of Stone`: `Cathedral of Jaén` plus its first five published visual objectives.
 
+[`0007_seed_banos_arabes_poi_and_objectives.sql`](./migrations/0007_seed_banos_arabes_poi_and_objectives.sql) then introduces the second real POI slice for `Jaén: Echoes of Stone`: `Arab Baths of Jaén` plus its first five published visual objectives.
+
 ## Naming and Platform Notes
 
 - Worker resource naming follows the `cityquest-<environment>-<resource>` convention.

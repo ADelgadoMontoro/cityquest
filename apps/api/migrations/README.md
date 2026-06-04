@@ -13,6 +13,7 @@ This directory is reserved for future `Cloudflare D1` SQL migrations owned by th
 0004_clear_external_jaen_cover_image.sql
 0005_add_visual_objectives_indoor_mode.sql
 0006_seed_catedral_de_jaen_poi_and_objectives.sql
+0007_seed_banos_arabes_poi_and_objectives.sql
 ```
 
 ## Purpose
@@ -47,6 +48,11 @@ The next schema refinement adds `indoor_mode` to `visual_objectives` so interior
 The next content seed introduces:
 
 - POI `Cathedral of Jaén`
+- five first visual objectives for that stop
+
+The next content seed introduces:
+
+- POI `Arab Baths of Jaén`
 - five first visual objectives for that stop
 
 It intentionally defers:
