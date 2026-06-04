@@ -103,17 +103,15 @@ export function CurrentObjectiveScreen({
         <Text style={styles.eyebrow}>Current Objective</Text>
         <Text style={styles.title}>{currentObjective.objective.title}</Text>
         <Text style={styles.description}>
-          This is the navigation landing point for the future gameplay slice. The next EVOs can
-          build on the live route payload and then add hints, validation, and unlocks.
+          {currentObjective.objective.description ||
+            'This objective is now sourced from the live route payload and acts as the gameplay-prep landing point for the MVP.'}
         </Text>
 
-        <View style={styles.objectiveCard}>
+        <View style={styles.heroCard}>
+          <Text style={styles.heroLabel}>Focus location</Text>
           <Text style={styles.objectiveTitle}>{currentObjective.poiName}</Text>
           <Text style={styles.objectiveValue}>{currentObjective.routeTitle}</Text>
           <Text style={styles.objectiveBody}>Destination: {currentObjective.destinationName}</Text>
-          <Text style={styles.objectiveBody}>
-            Target type: {currentObjective.objective.targetType}
-          </Text>
           <Text style={styles.objectiveBody}>
             Difficulty: {currentObjective.objective.difficulty}
           </Text>
@@ -121,8 +119,32 @@ export function CurrentObjectiveScreen({
             Mode: {currentObjective.objective.indoorMode ? 'indoor' : 'outdoor'}
           </Text>
           <Text style={styles.objectiveBody}>
-            Expected next payload source: {`GET /routes/${routeSlug}`}
+            Target type: {currentObjective.objective.targetType}
           </Text>
+          <Text style={styles.objectiveBody}>
+            GPS radius:{' '}
+            {currentObjective.objective.gpsRadiusMeters
+              ? `${currentObjective.objective.gpsRadiusMeters} meters`
+              : 'not defined yet'}
+          </Text>
+        </View>
+
+        <View style={styles.supportCard}>
+          <Text style={styles.supportTitle}>Progressive hints</Text>
+          <Text style={styles.supportBody}>
+            Hints will appear here once they are seeded in D1. For now, this screen shows the live
+            objective and the exact place where layered help can plug into the MVP flow.
+          </Text>
+          <PrimaryButton disabled label="Hints Coming Soon" onPress={() => undefined} />
+        </View>
+
+        <View style={styles.supportCard}>
+          <Text style={styles.supportTitle}>Camera validation</Text>
+          <Text style={styles.supportBody}>
+            Camera capture is intentionally not active yet. This slice prepares the gameplay screen
+            without pretending that validation, permissions, or photo analysis already exist.
+          </Text>
+          <PrimaryButton disabled label="Camera Coming Soon" onPress={() => undefined} />
         </View>
 
         <PrimaryButton label="Back to Route Detail" onPress={onBack} />
@@ -156,13 +178,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
   },
-  objectiveCard: {
+  heroCard: {
     gap: 10,
-    padding: 20,
+    padding: 22,
     borderRadius: 24,
     backgroundColor: '#fff9f1',
     borderWidth: 1,
     borderColor: '#e6d5bf',
+  },
+  heroLabel: {
+    color: '#a45a2a',
+    fontSize: 13,
+    fontWeight: '700',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
   },
   objectiveTitle: {
     color: '#1c1d21',
@@ -178,5 +207,23 @@ const styles = StyleSheet.create({
     color: '#4f5663',
     fontSize: 15,
     lineHeight: 22,
+  },
+  supportCard: {
+    gap: 14,
+    padding: 20,
+    borderRadius: 24,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e6d5bf',
+  },
+  supportTitle: {
+    color: '#1c1d21',
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  supportBody: {
+    color: '#4f5663',
+    fontSize: 15,
+    lineHeight: 23,
   },
 });

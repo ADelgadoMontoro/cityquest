@@ -15,7 +15,7 @@ This bootstrap provides:
 - a minimal in-app navigation flow for the next mobile slice
 - a live destination selector backed by the Worker API
 - a live route detail screen backed by the Worker API
-- a small local adapter only for the current-objective placeholder
+- a live-backed current-objective screen prepared for the next gameplay slice
 - an initial folder structure for app growth
 - shared workspace scripts aligned with the monorepo
 
@@ -34,10 +34,10 @@ This flow is already aligned with the real backend slices implemented in `apps/a
 - `GET /destinations`
 - `GET /routes/jaen-echoes-of-stone`
 
-The destination selector and route detail screen now read the live Worker API, while the
-current-objective screen still uses a small in-memory adapter that mirrors the real seeded MVP
-content. That keeps `EVO-0027` lightweight while leaving a clean swap point for `EVO-0028`, where
-the gameplay screen should start consuming the live Worker endpoints too.
+The destination selector, route detail screen, and current-objective screen now all read the live
+Worker API. The current-objective view is still intentionally pre-gameplay: it shows the real
+objective context and keeps hints/camera as honest placeholders until later EVOs add those
+capabilities for real.
 
 ## Local API Configuration
 

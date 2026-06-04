@@ -1,8 +1,10 @@
 export type MobileObjectiveSummary = {
   slug: string;
   title: string;
+  description: string;
   targetType: string;
   difficulty: string;
+  gpsRadiusMeters: number | null;
   indoorMode: boolean;
   displayOrder: number;
 };

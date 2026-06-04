@@ -1,13 +1,26 @@
 import { Pressable, StyleSheet, Text } from 'react-native';
 
 type PrimaryButtonProps = {
+  disabled?: boolean;
   label: string;
   onPress: () => void;
 };
 
-export function PrimaryButton({ label, onPress }: PrimaryButtonProps): React.JSX.Element {
+export function PrimaryButton({
+  disabled = false,
+  label,
+  onPress,
+}: PrimaryButtonProps): React.JSX.Element {
   return (
-    <Pressable onPress={onPress} style={({ pressed }) => [styles.button, pressed && styles.pressed]}>
+    <Pressable
+      disabled={disabled}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.button,
+        disabled && styles.buttonDisabled,
+        pressed && !disabled && styles.pressed,
+      ]}
+    >
       <Text style={styles.label}>{label}</Text>
     </Pressable>
   );
@@ -21,6 +34,9 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: '#1d4f91',
     alignItems: 'center',
+  },
+  buttonDisabled: {
+    backgroundColor: '#9eaaba',
   },
   label: {
     color: '#ffffff',
