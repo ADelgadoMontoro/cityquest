@@ -1,5 +1,14 @@
 # CityQuest
 
+![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript&logoColor=white)
+![Expo](https://img.shields.io/badge/Expo-Mobile_App-000020?logo=expo&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-Admin_Panel-000000?logo=nextdotjs&logoColor=white)
+![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-F38020?logo=cloudflare&logoColor=white)
+![Cloudflare D1](https://img.shields.io/badge/Cloudflare-D1-F38020?logo=cloudflare&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-Tested-6E9F18?logo=vitest&logoColor=white)
+![Status](https://img.shields.io/badge/MVP-In_Progress-2563EB)
+![Architecture](https://img.shields.io/badge/Architecture-Lightweight_DDD-1F2937)
+
 CityQuest is a gamified cultural tourism platform. This repository is organized as a TypeScript monorepo and adapted to a lightweight DDD structure so the mobile app, admin panel, serverless backend, cloud infrastructure, and domain packages can evolve with clear boundaries from the start.
 
 The current preferred MVP platform direction is:
@@ -10,6 +19,30 @@ The current preferred MVP platform direction is:
 - `Cloudflare R2` for media and asset storage
 
 Some AWS-oriented foundations still exist in the repository as earlier exploratory groundwork, but Cloudflare is now the intended forward path for the MVP.
+
+## Current MVP Slice
+
+The current real product slice in the repository is:
+
+- destination `Jaén`
+- route `Jaén: Echoes of Stone`
+- POI `Cathedral of Jaén`
+- POI `Arab Baths of Jaén`
+- published visual objectives for both POIs
+
+That means the project has already moved beyond backend foundation only: the active API and D1 database now contain real MVP content that later endpoints and screens can consume.
+
+## Progress Snapshot
+
+These percentages are approximate engineering snapshots, not formal project accounting.
+
+| Area | Progress | Notes |
+| --- | --- | --- |
+| Platform / Infra | `[########--] 80%` | Cloudflare direction, Worker runtime, D1 binding, migrations, and verification flow are in place. |
+| API / Data | `[######----] 60%` | Healthcheck, HTTP foundation, schema, and first seeded content slices are done; public read endpoints are next. |
+| Mobile | `[##--------] 20%` | Expo foundation exists, but real backend-driven product flows are still pending. |
+| Admin | `[##--------] 20%` | Next.js foundation exists, but real content management flows are still pending. |
+| Overall MVP | `[#####-----] 45%` | Foundations are solid; the next gains come from public endpoints and real app consumption. |
 
 ## Start Here
 
@@ -36,7 +69,7 @@ packages/
   config/         # Shared repository configuration
   contracts/      # Cross-app DTOs and integration contracts
   shared-kernel/  # Truly shared primitives used across contexts
-  contexts/
+  contexts/       # Scaffolded bounded contexts for later domain growth
     exploration/  # Routes, progression, objectives, unlock flow
     content/      # Narrative content, hints, quizzes, adaptations
     identity/     # Users, roles, sessions, demo/admin access
@@ -60,6 +93,12 @@ The repository follows a lightweight DDD baseline:
 - `packages/contracts` contains cross-boundary contracts and DTOs.
 
 This is intentionally lightweight for the MVP. The goal is to make architectural boundaries explicit early without filling the codebase with unnecessary abstractions before the main use cases exist.
+
+Important nuance:
+
+- the bounded contexts under `packages/contexts/*` are tracked in the repository
+- they are currently scaffolded rather than feature-complete
+- the most mature runtime path today is `apps/api`, followed by the shared repo/configuration layer
 
 ## Package Manager
 
@@ -101,6 +140,19 @@ Current behavior:
 Legacy AWS infrastructure scripts still exist under the `infra` workspace for historical reference. They are not the active MVP path, but they remain part of the default verification flow so the retained groundwork does not silently rot.
 
 This keeps the root scripts honest: they represent the capabilities that are actually implemented today instead of passing through placeholder workspace commands.
+
+## What Is Real Today
+
+The repository already gives you:
+
+- a running `Cloudflare Workers` backend in `apps/api`
+- a formal `GET /health` endpoint
+- D1 schema and migration flow
+- real seeded MVP content for `Jaén: Echoes of Stone`
+- backend unit and integration tests
+- mobile and admin foundations ready to consume future public endpoints
+
+The next high-value engineering step is not more platform bootstrapping. It is exposing the seeded content through public read endpoints and then consuming that data from mobile and admin.
 
 ## Architecture Decisions
 

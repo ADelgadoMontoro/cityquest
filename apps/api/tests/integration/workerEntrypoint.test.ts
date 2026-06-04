@@ -11,13 +11,16 @@ function createExecutionContext(): WorkerExecutionContext {
   };
 }
 
-function createPreparedStatementStub(): D1PreparedStatement {
+function createPreparedStatementStub(
+  results: Record<string, unknown>[] = [],
+): D1PreparedStatement {
   return {
     all: async () => ({
       meta: {},
+      results,
       success: true,
     }),
-    bind: () => createPreparedStatementStub(),
+    bind: () => createPreparedStatementStub(results),
     first: async () => null,
     raw: async () => [],
     run: async () => ({
@@ -27,7 +30,7 @@ function createPreparedStatementStub(): D1PreparedStatement {
   };
 }
 
-function createDatabaseStub(): D1Database {
+function createDatabaseStub(results: Record<string, unknown>[] = []): D1Database {
   return {
     batch: async () => [],
     dump: async () => new ArrayBuffer(0),
@@ -35,7 +38,7 @@ function createDatabaseStub(): D1Database {
       meta: {},
       success: true,
     }),
-    prepare: () => createPreparedStatementStub(),
+    prepare: () => createPreparedStatementStub(results),
   };
 }
 
@@ -71,6 +74,52 @@ describe('workerEntrypoint integration', () => {
       },
       meta: {
         timestamp: expect.any(String),
+      },
+      success: true,
+    });
+  });
+
+  it('returns a structured destinations listing at /destinations', async () => {
+    const response = await workerEntrypoint.fetch(
+      new Request('http://localhost/destinations'),
+      createEnv({
+        DB: createDatabaseStub([
+          {
+            cover_image_url: null,
+            description:
+              'Jaén is a historic Andalusian city where castles, cathedrals, Arab baths and local legends reveal centuries of cultural heritage.',
+            display_order: 0,
+            id: 'destination-jaen',
+            name: 'Jaén',
+            slug: 'jaen',
+            status: 'published',
+          },
+        ]),
+      }),
+      createExecutionContext(),
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toBe('application/json; charset=utf-8');
+    expect(response.headers.get('access-control-allow-origin')).toBe('*');
+
+    await expect(response.json()).resolves.toEqual({
+      data: {
+        destinations: [
+          {
+            coverImageUrl: null,
+            description:
+              'Jaén is a historic Andalusian city where castles, cathedrals, Arab baths and local legends reveal centuries of cultural heritage.',
+            displayOrder: 0,
+            id: 'destination-jaen',
+            name: 'Jaén',
+            slug: 'jaen',
+            status: 'published',
+          },
+        ],
+      },
+      meta: {
+        count: 1,
       },
       success: true,
     });
