@@ -2,6 +2,7 @@ import { createMethodNotAllowedResponse, createNotFoundResponse } from '../http/
 import { applyCorsHeaders, createPreflightResponse } from '../http/cors';
 import { createHealthRouteHandler } from '../routes/createHealthRouteHandler';
 import { createGetRouteDetailRouteHandler } from '../routes/createGetRouteDetailRouteHandler';
+import { createGetObjectiveUnlocksRouteHandler } from '../routes/createGetObjectiveUnlocksRouteHandler';
 import { createInitializationRouteHandler } from '../routes/createInitializationRouteHandler';
 import { createListDestinationsRouteHandler } from '../routes/createListDestinationsRouteHandler';
 import type { ApiRouter, ApiRouteDefinition } from '../types/http';
@@ -53,6 +54,12 @@ export function createApiRouter({ config }: CreateApiRouterDependencies): ApiRou
         GET: createGetRouteDetailRouteHandler(),
       },
       pathname: '/routes/:routeSlug',
+    },
+    {
+      methods: {
+        GET: createGetObjectiveUnlocksRouteHandler(),
+      },
+      pathname: '/objectives/:objectiveSlug/unlocks',
     },
   ];
 

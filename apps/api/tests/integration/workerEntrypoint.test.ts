@@ -264,6 +264,71 @@ describe('workerEntrypoint integration', () => {
     });
   });
 
+  it('returns unlockable content for a published objective at /objectives/estatua-san-fernando/unlocks', async () => {
+    const response = await workerEntrypoint.fetch(
+      new Request('http://localhost/objectives/estatua-san-fernando/unlocks'),
+      createEnv({
+        DB: createDatabaseStubWithPreparedResults([
+          [
+            {
+              id: 'objective-catedral-de-jaen-estatua-san-fernando',
+              slug: 'estatua-san-fernando',
+              title: 'Statue of Saint Ferdinand',
+            },
+          ],
+          [
+            {
+              audio_url: null,
+              content_type: 'text',
+              display_order: 0,
+              id: 'unlockable-estatua-san-fernando-king-who-changed-jaen',
+              image_url: null,
+              long_text:
+                'Ferdinand III, later known as Saint Ferdinand, is one of the key figures in the medieval history of Jaén. In 1246, after a long period of conflict and siege, the city came under Christian control, becoming an important frontier stronghold between Castile and the Nasrid Kingdom of Granada. His presence in the city’s memory is not just political or military: it also connects Jaén with the transformation of its religious, urban and cultural landscape. Finding this statue is the first step in understanding how Jaén became a city shaped by layers of conquest, faith, defence and memory.',
+              objective_id: 'objective-catedral-de-jaen-estatua-san-fernando',
+              short_text:
+                'This statue represents Ferdinand III of Castile, the Christian king whose conquest of Jaén in 1246 marked a turning point in the city’s medieval history.',
+              title: 'The King Who Changed Jaén',
+            },
+          ],
+        ]),
+      }),
+      createExecutionContext(),
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toBe('application/json; charset=utf-8');
+    expect(response.headers.get('access-control-allow-origin')).toBe('*');
+
+    await expect(response.json()).resolves.toEqual({
+      data: {
+        objective: {
+          id: 'objective-catedral-de-jaen-estatua-san-fernando',
+          slug: 'estatua-san-fernando',
+          title: 'Statue of Saint Ferdinand',
+        },
+        unlockableContents: [
+          {
+            audioUrl: null,
+            contentType: 'text',
+            displayOrder: 0,
+            id: 'unlockable-estatua-san-fernando-king-who-changed-jaen',
+            imageUrl: null,
+            longText:
+              'Ferdinand III, later known as Saint Ferdinand, is one of the key figures in the medieval history of Jaén. In 1246, after a long period of conflict and siege, the city came under Christian control, becoming an important frontier stronghold between Castile and the Nasrid Kingdom of Granada. His presence in the city’s memory is not just political or military: it also connects Jaén with the transformation of its religious, urban and cultural landscape. Finding this statue is the first step in understanding how Jaén became a city shaped by layers of conquest, faith, defence and memory.',
+            shortText:
+              'This statue represents Ferdinand III of Castile, the Christian king whose conquest of Jaén in 1246 marked a turning point in the city’s medieval history.',
+            title: 'The King Who Changed Jaén',
+          },
+        ],
+      },
+      meta: {
+        count: 1,
+      },
+      success: true,
+    });
+  });
+
   it('returns the initialization response at the root route', async () => {
     const response = await workerEntrypoint.fetch(
       new Request('http://localhost/'),

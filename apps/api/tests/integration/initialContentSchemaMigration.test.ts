@@ -35,6 +35,10 @@ const banosArabesSeedMigrationFilePath = resolve(
   migrationsDirectoryPath,
   '0007_seed_banos_arabes_poi_and_objectives.sql',
 );
+const statueOfSaintFerdinandUnlockableContentMigrationFilePath = resolve(
+  migrationsDirectoryPath,
+  '0008_seed_statue_of_saint_ferdinand_unlockable_content.sql',
+);
 
 function readMigrationFile(filePath: string) {
   return readFileSync(filePath, 'utf-8');
@@ -66,6 +70,7 @@ describe('initial content schema migration', () => {
     expect(existsSync(addVisualObjectivesIndoorModeMigrationFilePath)).toBe(true);
     expect(existsSync(catedralSeedMigrationFilePath)).toBe(true);
     expect(existsSync(banosArabesSeedMigrationFilePath)).toBe(true);
+    expect(existsSync(statueOfSaintFerdinandUnlockableContentMigrationFilePath)).toBe(true);
   });
 
   it('defines the core MVP content tables', () => {
@@ -185,6 +190,16 @@ describe('initial content schema migration', () => {
     expect(migration).toContain("'piscina-sala-templada-banos-arabes'");
     expect(migration).toContain("'columnas-ala-rey-ali'");
     expect(migration).toContain("'tinajas-agua-sala-caliente'");
+  });
+
+  it('defines a dedicated unlockable-content seed migration for Statue of Saint Ferdinand', () => {
+    const migration = readMigrationFile(statueOfSaintFerdinandUnlockableContentMigrationFilePath);
+
+    expect(migration).toContain('INSERT INTO unlockable_contents');
+    expect(migration).toContain("'objective-catedral-de-jaen-estatua-san-fernando'");
+    expect(migration).toContain("'The King Who Changed Jaén'");
+    expect(migration).toContain("'text'");
+    expect(migration).toContain("'published'");
   });
 
   it('executes the migration set successfully in SQLite', () => {
@@ -323,6 +338,28 @@ describe('initial content schema migration', () => {
     const unlockableContentCount = database
       .prepare('SELECT COUNT(*) AS count FROM unlockable_contents')
       .get() as { count: number };
+
+    const unlockableContents = database
+      .prepare(
+        `
+          SELECT id, objective_id, title, short_text, long_text, content_type, status,
+                 audio_url, image_url, display_order
+          FROM unlockable_contents
+          ORDER BY display_order, title
+        `,
+      )
+      .all() as Array<{
+      audio_url: string | null;
+      content_type: string;
+      display_order: number;
+      id: string;
+      image_url: string | null;
+      long_text: string | null;
+      objective_id: string;
+      short_text: string | null;
+      status: string;
+      title: string;
+    }>;
 
     expect(destinations).toEqual([
       {
@@ -529,7 +566,23 @@ describe('initial content schema migration', () => {
     ]);
 
     expect(hintCount.count).toBe(0);
-    expect(unlockableContentCount.count).toBe(0);
+    expect(unlockableContentCount.count).toBe(1);
+    expect(unlockableContents).toEqual([
+      {
+        audio_url: null,
+        content_type: 'text',
+        display_order: 0,
+        id: 'unlockable-estatua-san-fernando-king-who-changed-jaen',
+        image_url: null,
+        long_text:
+          'Ferdinand III, later known as Saint Ferdinand, is one of the key figures in the medieval history of Jaén. In 1246, after a long period of conflict and siege, the city came under Christian control, becoming an important frontier stronghold between Castile and the Nasrid Kingdom of Granada. His presence in the city’s memory is not just political or military: it also connects Jaén with the transformation of its religious, urban and cultural landscape. Finding this statue is the first step in understanding how Jaén became a city shaped by layers of conquest, faith, defence and memory.',
+        objective_id: 'objective-catedral-de-jaen-estatua-san-fernando',
+        short_text:
+          'This statue represents Ferdinand III of Castile, the Christian king whose conquest of Jaén in 1246 marked a turning point in the city’s medieval history.',
+        status: 'published',
+        title: 'The King Who Changed Jaén',
+      },
+    ]);
 
     database.close();
   });

@@ -31,6 +31,15 @@ The current real product slice in the repository is:
 - published visual objectives for both POIs
 - public `GET /destinations` endpoint
 - public `GET /routes/jaen-echoes-of-stone` endpoint
+- public `GET /objectives/estatua-san-fernando/unlocks` endpoint
+- mobile navigation flow through:
+  - `welcome`
+  - `destinations`
+  - `route detail`
+  - `current objective`
+- live-backed mobile destination selector
+- live-backed mobile route detail screen
+- live-backed current-objective gameplay-prep screen
 
 That means the project has already moved beyond backend foundation only: the active API and D1 database now contain real MVP content that later endpoints and screens can consume.
 
@@ -41,10 +50,10 @@ These percentages are approximate engineering snapshots, not formal project acco
 | Area | Progress | Notes |
 | --- | --- | --- |
 | Platform / Infra | `[########--] 80%` | Cloudflare direction, Worker runtime, D1 binding, migrations, and verification flow are in place. |
-| API / Data | `[#######---] 70%` | Healthcheck, HTTP foundation, schema, seeds, destinations listing, and first route detail endpoint are done. |
-| Mobile | `[##--------] 20%` | Expo foundation exists, but real backend-driven product flows are still pending. |
+| API / Data | `[########--] 80%` | Healthcheck, HTTP foundation, schema, seeds, public content endpoints, and the first unlockable-content delivery path are done. |
+| Mobile | `[#####-----] 50%` | Expo navigation is in place and the MVP flow already consumes live destinations, route detail, and current objective data. |
 | Admin | `[##--------] 20%` | Next.js foundation exists, but real content management flows are still pending. |
-| Overall MVP | `[#####-----] 50%` | Foundations and first public content endpoints are in place; the next gains come from real app consumption. |
+| Overall MVP | `[######----] 65%` | Foundations, real seeded content, public endpoints, first unlockable narrative delivery, and the first mobile consumption flow are in place. |
 
 ## Start Here
 
@@ -154,9 +163,10 @@ The repository already gives you:
 - D1 schema and migration flow
 - real seeded MVP content for `Jaén: Echoes of Stone`
 - backend unit and integration tests
-- mobile and admin foundations ready to consume future public endpoints
+- a mobile flow that already consumes the live MVP route slice
+- admin foundations ready to consume future public endpoints
 
-The next high-value engineering step is no longer exposing the first public endpoints. It is consuming that real seeded content from mobile and admin, and then layering gameplay, progress, and unlock flows on top.
+The next high-value engineering step is no longer exposing the first public endpoints. It is widening gameplay on top of the live mobile flow, and then expanding admin, progress, and unlock capabilities around the same seeded content.
 
 ## Architecture Decisions
 

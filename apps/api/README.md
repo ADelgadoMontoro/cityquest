@@ -14,16 +14,17 @@ The current bootstrap intentionally includes:
 - a centralized HTTP routing and transport foundation for future API endpoints
 - a public `GET /destinations` endpoint backed by D1
 - a public `GET /routes/jaen-echoes-of-stone` endpoint backed by D1
+- a public `GET /objectives/estatua-san-fernando/unlocks` endpoint backed by D1
 - local development through `Wrangler`
 - build-time Worker runtime verification through a local Wrangler smoke check
 - unit and integration test wiring for backend evolution
 
 It intentionally does not include:
 
-- business endpoints
-- database access logic
-- Cloudflare D1 schema or queries
-- Cloudflare R2 or KV integrations
+- real validation workflows
+- progress persistence
+- Cloudflare R2 integrations
+- Cloudflare KV integrations
 - authentication
 - production deployment strategy
 
@@ -97,6 +98,12 @@ To validate the current real route detail payload:
 curl http://localhost:8787/routes/jaen-echoes-of-stone
 ```
 
+To validate the first unlockable-content payload:
+
+```bash
+curl http://localhost:8787/objectives/estatua-san-fernando/unlocks
+```
+
 ## D1 Preparation
 
 This workspace is the owner of the active `Cloudflare D1` integration path.
@@ -142,10 +149,18 @@ The first baseline content seed is [`0003_seed_jaen_and_route.sql`](./migrations
 
 [`0007_seed_banos_arabes_poi_and_objectives.sql`](./migrations/0007_seed_banos_arabes_poi_and_objectives.sql) then introduces the second real POI slice for `Jaén: Echoes of Stone`: `Arab Baths of Jaén` plus its first five published visual objectives.
 
+[`0008_seed_statue_of_saint_ferdinand_unlockable_content.sql`](./migrations/0008_seed_statue_of_saint_ferdinand_unlockable_content.sql) introduces the first real unlockable narrative content for the objective `estatua-san-fernando`.
+
 The first public read endpoints now sit on top of that seeded baseline:
 
 - `GET /destinations`
 - `GET /routes/jaen-echoes-of-stone`
+- `GET /objectives/estatua-san-fernando/unlocks`
+
+Important nuance:
+
+- this unlock endpoint does not claim to perform real validation yet
+- it is the first backend-owned reward delivery path, ready for later gameplay slices to call after mocked or real validation succeeds
 
 ## Naming and Platform Notes
 
