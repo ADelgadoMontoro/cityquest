@@ -9,6 +9,8 @@ This directory is reserved for future `Cloudflare D1` SQL migrations owned by th
 ```text
 0001_initial_content_schema.sql
 0002_enforce_content_sibling_ordering.sql
+0003_seed_jaen_and_route.sql
+0004_clear_external_jaen_cover_image.sql
 ```
 
 ## Purpose
@@ -30,6 +32,13 @@ The current baseline migration deliberately covers only the first content slice:
 - `visual_objectives`
 - `hints`
 - `unlockable_contents`
+
+The first baseline content seed now introduces:
+
+- destination `Jaén`
+- route `Jaén: Echoes of Stone`
+
+The next follow-up migration clears the temporary third-party `cover_image_url` so the destination no longer depends on an external asset placeholder.
 
 It intentionally defers:
 

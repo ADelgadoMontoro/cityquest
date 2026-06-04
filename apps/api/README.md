@@ -118,6 +118,10 @@ Future schema files should live in [`apps/api/migrations`](./migrations).
 
 The first schema migration is [`0001_initial_content_schema.sql`](./migrations/0001_initial_content_schema.sql). It defines the initial content backbone only and intentionally defers users, progress, analytics, and demo-mode persistence.
 
+The first baseline content seed is [`0003_seed_jaen_and_route.sql`](./migrations/0003_seed_jaen_and_route.sql). It inserts the `Jaén` destination and the `Jaén: Echoes of Stone` route, but still leaves POIs and deeper gameplay content for later EVOs.
+
+[`0004_clear_external_jaen_cover_image.sql`](./migrations/0004_clear_external_jaen_cover_image.sql) then clears the temporary third-party `cover_image_url` by setting it to `null` until the project owns a stable asset.
+
 ## Naming and Platform Notes
 
 - Worker resource naming follows the `cityquest-<environment>-<resource>` convention.

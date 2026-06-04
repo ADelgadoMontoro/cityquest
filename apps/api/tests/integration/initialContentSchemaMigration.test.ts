@@ -15,6 +15,14 @@ const orderingMigrationFilePath = resolve(
   migrationsDirectoryPath,
   '0002_enforce_content_sibling_ordering.sql',
 );
+const jaenSeedMigrationFilePath = resolve(
+  migrationsDirectoryPath,
+  '0003_seed_jaen_and_route.sql',
+);
+const clearJaenCoverImageMigrationFilePath = resolve(
+  migrationsDirectoryPath,
+  '0004_clear_external_jaen_cover_image.sql',
+);
 
 function readMigrationFile(filePath: string) {
   return readFileSync(filePath, 'utf-8');
@@ -41,6 +49,8 @@ describe('initial content schema migration', () => {
   it('stores the expected content migrations in the D1 migrations folder', () => {
     expect(existsSync(initialSchemaMigrationFilePath)).toBe(true);
     expect(existsSync(orderingMigrationFilePath)).toBe(true);
+    expect(existsSync(jaenSeedMigrationFilePath)).toBe(true);
+    expect(existsSync(clearJaenCoverImageMigrationFilePath)).toBe(true);
   });
 
   it('defines the core MVP content tables', () => {
@@ -103,6 +113,27 @@ describe('initial content schema migration', () => {
     expect(migration).not.toContain('INSERT INTO');
   });
 
+  it('defines a dedicated Jaen destination and route seed migration', () => {
+    const migration = readMigrationFile(jaenSeedMigrationFilePath);
+
+    expect(migration).toContain('INSERT INTO destinations');
+    expect(migration).toContain("'destination-jaen'");
+    expect(migration).toContain("'jaen'");
+    expect(migration).toContain("'Jaén'");
+    expect(migration).toContain('INSERT INTO routes');
+    expect(migration).toContain("'route-jaen-echoes-of-stone'");
+    expect(migration).toContain("'jaen-echoes-of-stone'");
+    expect(migration).toContain("'Jaén: Echoes of Stone'");
+  });
+
+  it('clears the external Jaen cover image in a follow-up migration', () => {
+    const migration = readMigrationFile(clearJaenCoverImageMigrationFilePath);
+
+    expect(migration).toContain('UPDATE destinations');
+    expect(migration).toContain('cover_image_url = NULL');
+    expect(migration).toContain("WHERE id = 'destination-jaen'");
+  });
+
   it('executes the migration set successfully in SQLite', () => {
     const database = createSchemaSnapshot();
 
@@ -140,6 +171,85 @@ describe('initial content schema migration', () => {
     database.close();
   });
 
+  it('seeds Jaen and the MVP route without adding POIs yet', () => {
+    const database = createSchemaSnapshot();
+
+    const destinations = database
+      .prepare(
+        `
+          SELECT id, slug, name, description, status, cover_image_url, display_order
+          FROM destinations
+          ORDER BY display_order, name
+        `,
+      )
+      .all() as Array<{
+      cover_image_url: string | null;
+      description: string;
+      display_order: number;
+      id: string;
+      name: string;
+      slug: string;
+      status: string;
+    }>;
+
+    const routes = database
+      .prepare(
+        `
+          SELECT id, destination_id, slug, title, description, status, difficulty,
+                 estimated_duration_minutes, display_order
+          FROM routes
+          ORDER BY display_order, title
+        `,
+      )
+      .all() as Array<{
+      description: string;
+      destination_id: string;
+      difficulty: string;
+      display_order: number;
+      estimated_duration_minutes: number;
+      id: string;
+      slug: string;
+      status: string;
+      title: string;
+    }>;
+
+    const poiCount = database
+      .prepare('SELECT COUNT(*) AS count FROM pois')
+      .get() as { count: number };
+
+    expect(destinations).toEqual([
+      {
+        cover_image_url: null,
+        description:
+          'Jaén is a historic Andalusian city where castles, cathedrals, Arab baths and local legends reveal centuries of cultural heritage.',
+        display_order: 0,
+        id: 'destination-jaen',
+        name: 'Jaén',
+        slug: 'jaen',
+        status: 'published',
+      },
+    ]);
+
+    expect(routes).toEqual([
+      {
+        description:
+          'Jaén: Echoes of Stone turns the city into a visual investigation, guiding visitors through real heritage details in the Cathedral of Jaén and the Arab Baths to unlock hidden stories.',
+        destination_id: 'destination-jaen',
+        difficulty: 'easy',
+        display_order: 0,
+        estimated_duration_minutes: 300,
+        id: 'route-jaen-echoes-of-stone',
+        slug: 'jaen-echoes-of-stone',
+        status: 'published',
+        title: 'Jaén: Echoes of Stone',
+      },
+    ]);
+
+    expect(poiCount.count).toBe(0);
+
+    database.close();
+  });
+
   it('rejects duplicate sibling display orders inside the same parent', () => {
     const database = createSchemaSnapshot();
 
@@ -147,25 +257,25 @@ describe('initial content schema migration', () => {
       INSERT INTO destinations (
         id, slug, name, status, display_order, created_at, updated_at
       ) VALUES (
-        'destination-jaen', 'jaen', 'Jaen', 'published', 0, '2026-06-03T00:00:00.000Z', '2026-06-03T00:00:00.000Z'
+        'destination-test', 'test-destination', 'Test Destination', 'published', 1, '2026-06-03T00:00:00.000Z', '2026-06-03T00:00:00.000Z'
       );
 
       INSERT INTO routes (
         id, destination_id, slug, title, status, display_order, created_at, updated_at
       ) VALUES (
-        'route-ecos-de-piedra', 'destination-jaen', 'ecos-de-piedra', 'Ecos de Piedra', 'published', 0, '2026-06-03T00:00:00.000Z', '2026-06-03T00:00:00.000Z'
+        'route-test', 'destination-test', 'test-route', 'Test Route', 'published', 1, '2026-06-03T00:00:00.000Z', '2026-06-03T00:00:00.000Z'
       );
 
       INSERT INTO pois (
         id, route_id, slug, name, status, latitude, longitude, indoor_mode, display_order, created_at, updated_at
       ) VALUES (
-        'poi-catedral', 'route-ecos-de-piedra', 'catedral', 'Catedral de Jaen', 'published', 37.7796, -3.7849, 0, 0, '2026-06-03T00:00:00.000Z', '2026-06-03T00:00:00.000Z'
+        'poi-test', 'route-test', 'test-poi', 'Test POI', 'published', 37.7796, -3.7849, 0, 1, '2026-06-03T00:00:00.000Z', '2026-06-03T00:00:00.000Z'
       );
 
       INSERT INTO visual_objectives (
         id, poi_id, slug, title, status, target_type, gps_radius_meters, display_order, created_at, updated_at
       ) VALUES (
-        'objective-facade', 'poi-catedral', 'facade', 'Find the facade detail', 'published', 'visual_landmark', 25, 0, '2026-06-03T00:00:00.000Z', '2026-06-03T00:00:00.000Z'
+        'objective-test', 'poi-test', 'test-objective', 'Test Objective', 'published', 'visual_landmark', 25, 1, '2026-06-03T00:00:00.000Z', '2026-06-03T00:00:00.000Z'
       );
     `);
 
@@ -174,7 +284,7 @@ describe('initial content schema migration', () => {
         INSERT INTO routes (
           id, destination_id, slug, title, status, display_order, created_at, updated_at
         ) VALUES (
-          'route-duplicate-order', 'destination-jaen', 'duplicate-order', 'Duplicate Route Order', 'draft', 0, '2026-06-03T00:00:00.000Z', '2026-06-03T00:00:00.000Z'
+          'route-duplicate-order', 'destination-test', 'duplicate-order', 'Duplicate Route Order', 'draft', 1, '2026-06-03T00:00:00.000Z', '2026-06-03T00:00:00.000Z'
         );
       `),
     ).toThrow();
@@ -184,7 +294,7 @@ describe('initial content schema migration', () => {
         INSERT INTO pois (
           id, route_id, slug, name, status, latitude, longitude, indoor_mode, display_order, created_at, updated_at
         ) VALUES (
-          'poi-duplicate-order', 'route-ecos-de-piedra', 'duplicate-order', 'Duplicate POI Order', 'draft', 37.7800, -3.7850, 0, 0, '2026-06-03T00:00:00.000Z', '2026-06-03T00:00:00.000Z'
+          'poi-duplicate-order', 'route-test', 'duplicate-order', 'Duplicate POI Order', 'draft', 37.7800, -3.7850, 0, 1, '2026-06-03T00:00:00.000Z', '2026-06-03T00:00:00.000Z'
         );
       `),
     ).toThrow();
@@ -194,7 +304,7 @@ describe('initial content schema migration', () => {
         INSERT INTO visual_objectives (
           id, poi_id, slug, title, status, target_type, gps_radius_meters, display_order, created_at, updated_at
         ) VALUES (
-          'objective-duplicate-order', 'poi-catedral', 'duplicate-order', 'Duplicate Objective Order', 'draft', 'visual_landmark', 25, 0, '2026-06-03T00:00:00.000Z', '2026-06-03T00:00:00.000Z'
+          'objective-duplicate-order', 'poi-test', 'duplicate-order', 'Duplicate Objective Order', 'draft', 'visual_landmark', 25, 1, '2026-06-03T00:00:00.000Z', '2026-06-03T00:00:00.000Z'
         );
       `),
     ).toThrow();
