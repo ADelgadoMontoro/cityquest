@@ -1,15 +1,3 @@
-export type MobileDestinationListItem = {
-  id: string;
-  slug: string;
-  name: string;
-  description: string;
-  status: 'published';
-  coverImageUrl: string | null;
-  displayOrder: number;
-  routeSlug: string;
-  routeTitle: string;
-};
-
 export type MobileObjectiveSummary = {
   slug: string;
   title: string;
@@ -50,21 +38,6 @@ export type MobileCurrentObjectiveSnapshot = {
   routeSlug: string;
   routeTitle: string;
 };
-
-const CURRENT_DESTINATIONS: MobileDestinationListItem[] = [
-  {
-    id: 'destination-jaen',
-    slug: 'jaen',
-    name: 'Jaén',
-    description:
-      'Jaén is a historic Andalusian city where castles, cathedrals, Arab baths and local legends reveal centuries of cultural heritage.',
-    status: 'published',
-    coverImageUrl: null,
-    displayOrder: 0,
-    routeSlug: 'jaen-echoes-of-stone',
-    routeTitle: 'Jaén: Echoes of Stone',
-  },
-];
 
 const CURRENT_ROUTES: Record<string, MobileRouteDetail> = {
   'jaen-echoes-of-stone': {
@@ -184,10 +157,6 @@ const CURRENT_ROUTES: Record<string, MobileRouteDetail> = {
     ],
   },
 };
-
-export function listCurrentDestinations(): MobileDestinationListItem[] {
-  return CURRENT_DESTINATIONS;
-}
 
 export function getCurrentRouteDetail(routeSlug: string): MobileRouteDetail | null {
   return CURRENT_ROUTES[routeSlug] ?? null;

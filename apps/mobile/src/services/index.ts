@@ -1,5 +1,5 @@
 export {
   getCurrentObjectiveSnapshot,
   getCurrentRouteDetail,
-  listCurrentDestinations,
 } from '@/services/currentMvpCatalog';
+export { listDestinationSelectorItems } from '@/services/listDestinationSelectorItems';
