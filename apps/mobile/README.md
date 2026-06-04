@@ -14,7 +14,8 @@ This bootstrap provides:
 - a clean starter screen branded for CityQuest
 - a minimal in-app navigation flow for the next mobile slice
 - a live destination selector backed by the Worker API
-- a small local adapter only for the route-detail and current-objective placeholders
+- a live route detail screen backed by the Worker API
+- a small local adapter only for the current-objective placeholder
 - an initial folder structure for app growth
 - shared workspace scripts aligned with the monorepo
 
@@ -33,10 +34,10 @@ This flow is already aligned with the real backend slices implemented in `apps/a
 - `GET /destinations`
 - `GET /routes/jaen-echoes-of-stone`
 
-The destination selector now reads the live Worker API, while the route-detail and
-current-objective screens still use a small in-memory adapter that mirrors the real seeded MVP
-content. That keeps `EVO-0026` lightweight while leaving a clean swap point for `EVO-0027` and
-`EVO-0028`, where those screens should start consuming the live Worker endpoints too.
+The destination selector and route detail screen now read the live Worker API, while the
+current-objective screen still uses a small in-memory adapter that mirrors the real seeded MVP
+content. That keeps `EVO-0027` lightweight while leaving a clean swap point for `EVO-0028`, where
+the gameplay screen should start consuming the live Worker endpoints too.
 
 ## Local API Configuration
 

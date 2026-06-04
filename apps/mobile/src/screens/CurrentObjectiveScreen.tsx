@@ -1,9 +1,12 @@
+import { useEffect, useState } from 'react';
+
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
-import { getCurrentObjectiveSnapshot } from '@/services/currentMvpCatalog';
+import { getCurrentObjectiveSnapshot } from '@/services/getCurrentObjectiveSnapshot';
+import type { MobileCurrentObjectiveSnapshot } from '@/types/route';
 
 type CurrentObjectiveScreenProps = {
   objectiveSlug?: string;
@@ -16,7 +19,65 @@ export function CurrentObjectiveScreen({
   onBack,
   routeSlug,
 }: CurrentObjectiveScreenProps): React.JSX.Element {
-  const currentObjective = getCurrentObjectiveSnapshot(routeSlug, objectiveSlug);
+  const [currentObjective, setCurrentObjective] = useState<MobileCurrentObjectiveSnapshot | null>(
+    null,
+  );
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  async function loadCurrentObjective() {
+    setErrorMessage(null);
+    setIsLoading(true);
+
+    try {
+      const snapshot = await getCurrentObjectiveSnapshot(routeSlug, objectiveSlug);
+      setCurrentObjective(snapshot);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'The current objective screen could not load the live route payload.',
+      );
+      setCurrentObjective(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void loadCurrentObjective();
+  }, [objectiveSlug, routeSlug]);
+
+  if (isLoading) {
+    return (
+      <ScreenContainer>
+        <StatusBar style="dark" />
+        <View style={styles.wrapper}>
+          <Text style={styles.eyebrow}>Current Objective</Text>
+          <ActivityIndicator color="#1d4f91" size="small" />
+          <Text style={styles.title}>Loading objective</Text>
+          <Text style={styles.description}>
+            The app is resolving the selected objective from the live route payload.
+          </Text>
+        </View>
+      </ScreenContainer>
+    );
+  }
+
+  if (errorMessage) {
+    return (
+      <ScreenContainer>
+        <StatusBar style="dark" />
+        <View style={styles.wrapper}>
+          <Text style={styles.eyebrow}>Current Objective</Text>
+          <Text style={styles.title}>Objective unavailable</Text>
+          <Text style={styles.description}>{errorMessage}</Text>
+          <PrimaryButton label="Retry" onPress={() => void loadCurrentObjective()} />
+          <PrimaryButton label="Back to Route Detail" onPress={onBack} />
+        </View>
+      </ScreenContainer>
+    );
+  }
 
   if (!currentObjective) {
     return (
@@ -43,8 +104,7 @@ export function CurrentObjectiveScreen({
         <Text style={styles.title}>{currentObjective.objective.title}</Text>
         <Text style={styles.description}>
           This is the navigation landing point for the future gameplay slice. The next EVOs can
-          replace this in-memory adapter with the real route payload and then add hints,
-          validation, and unlocks.
+          build on the live route payload and then add hints, validation, and unlocks.
         </Text>
 
         <View style={styles.objectiveCard}>

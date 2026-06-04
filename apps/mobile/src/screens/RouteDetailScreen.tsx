@@ -1,9 +1,12 @@
+import { useEffect, useState } from 'react';
+
 import { StatusBar } from 'expo-status-bar';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
-import { getCurrentRouteDetail } from '@/services/currentMvpCatalog';
+import { getRouteDetail } from '@/services/getRouteDetail';
+import type { MobileRouteDetail } from '@/types/route';
 
 type RouteDetailScreenProps = {
   onBack: () => void;
@@ -16,7 +19,63 @@ export function RouteDetailScreen({
   onOpenCurrentObjective,
   routeSlug,
 }: RouteDetailScreenProps): React.JSX.Element {
-  const routeDetail = getCurrentRouteDetail(routeSlug);
+  const [routeDetail, setRouteDetail] = useState<MobileRouteDetail | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  async function loadRouteDetail() {
+    setErrorMessage(null);
+    setIsLoading(true);
+
+    try {
+      const snapshot = await getRouteDetail(routeSlug);
+      setRouteDetail(snapshot);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'The route detail screen could not load the live route payload.',
+      );
+      setRouteDetail(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void loadRouteDetail();
+  }, [routeSlug]);
+
+  if (isLoading) {
+    return (
+      <ScreenContainer>
+        <StatusBar style="dark" />
+        <View style={styles.wrapper}>
+          <Text style={styles.eyebrow}>Route Detail</Text>
+          <ActivityIndicator color="#1d4f91" size="small" />
+          <Text style={styles.title}>Loading route</Text>
+          <Text style={styles.description}>
+            The app is reading the real route payload from `GET /routes/{routeSlug}`.
+          </Text>
+        </View>
+      </ScreenContainer>
+    );
+  }
+
+  if (errorMessage) {
+    return (
+      <ScreenContainer>
+        <StatusBar style="dark" />
+        <View style={styles.wrapper}>
+          <Text style={styles.eyebrow}>Route Detail</Text>
+          <Text style={styles.title}>Route unavailable</Text>
+          <Text style={styles.description}>{errorMessage}</Text>
+          <PrimaryButton label="Retry" onPress={() => void loadRouteDetail()} />
+          <PrimaryButton label="Back to Destinations" onPress={onBack} />
+        </View>
+      </ScreenContainer>
+    );
+  }
 
   if (!routeDetail) {
     return (
@@ -27,7 +86,7 @@ export function RouteDetailScreen({
           <Text style={styles.title}>Route not available</Text>
           <Text style={styles.description}>
             This navigation step is wired for the real route detail endpoint, but the requested
-            slug is not present in the current MVP catalog.
+            slug is not published in the live backend right now.
           </Text>
           <Text style={styles.slug}>{routeSlug}</Text>
           <PrimaryButton label="Back to Destinations" onPress={onBack} />
@@ -45,7 +104,7 @@ export function RouteDetailScreen({
         <Text style={styles.eyebrow}>Route Detail</Text>
         <Text style={styles.title}>{routeDetail.route.title}</Text>
         <Text style={styles.description}>
-          This screen is aligned with the shape we already expose from `GET /routes/:routeSlug`.
+          This screen now reads the live route detail payload exposed by `GET /routes/:routeSlug`.
         </Text>
         <Text style={styles.slug}>{routeSlug}</Text>
 
@@ -57,6 +116,7 @@ export function RouteDetailScreen({
             Estimated duration: {routeDetail.route.estimatedDurationMinutes} minutes
           </Text>
           <Text style={styles.summaryBody}>Published POIs: {routeDetail.pois.length}</Text>
+          <Text style={styles.summaryBody}>Experience mode: live route preview</Text>
         </View>
 
         <PrimaryButton
