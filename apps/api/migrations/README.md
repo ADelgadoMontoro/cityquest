@@ -11,6 +11,8 @@ This directory is reserved for future `Cloudflare D1` SQL migrations owned by th
 0002_enforce_content_sibling_ordering.sql
 0003_seed_jaen_and_route.sql
 0004_clear_external_jaen_cover_image.sql
+0005_add_visual_objectives_indoor_mode.sql
+0006_seed_catedral_de_jaen_poi_and_objectives.sql
 ```
 
 ## Purpose
@@ -39,6 +41,13 @@ The first baseline content seed now introduces:
 - route `Jaén: Echoes of Stone`
 
 The next follow-up migration clears the temporary third-party `cover_image_url` so the destination no longer depends on an external asset placeholder.
+
+The next schema refinement adds `indoor_mode` to `visual_objectives` so interior and exterior objectives can coexist inside the same POI.
+
+The next content seed introduces:
+
+- POI `Cathedral of Jaén`
+- five first visual objectives for that stop
 
 It intentionally defers:
 

@@ -23,6 +23,14 @@ const clearJaenCoverImageMigrationFilePath = resolve(
   migrationsDirectoryPath,
   '0004_clear_external_jaen_cover_image.sql',
 );
+const addVisualObjectivesIndoorModeMigrationFilePath = resolve(
+  migrationsDirectoryPath,
+  '0005_add_visual_objectives_indoor_mode.sql',
+);
+const catedralSeedMigrationFilePath = resolve(
+  migrationsDirectoryPath,
+  '0006_seed_catedral_de_jaen_poi_and_objectives.sql',
+);
 
 function readMigrationFile(filePath: string) {
   return readFileSync(filePath, 'utf-8');
@@ -51,6 +59,8 @@ describe('initial content schema migration', () => {
     expect(existsSync(orderingMigrationFilePath)).toBe(true);
     expect(existsSync(jaenSeedMigrationFilePath)).toBe(true);
     expect(existsSync(clearJaenCoverImageMigrationFilePath)).toBe(true);
+    expect(existsSync(addVisualObjectivesIndoorModeMigrationFilePath)).toBe(true);
+    expect(existsSync(catedralSeedMigrationFilePath)).toBe(true);
   });
 
   it('defines the core MVP content tables', () => {
@@ -134,6 +144,29 @@ describe('initial content schema migration', () => {
     expect(migration).toContain("WHERE id = 'destination-jaen'");
   });
 
+  it('adds indoor mode to visual objectives in a follow-up schema migration', () => {
+    const migration = readMigrationFile(addVisualObjectivesIndoorModeMigrationFilePath);
+
+    expect(migration).toContain('ALTER TABLE visual_objectives');
+    expect(migration).toContain('ADD COLUMN indoor_mode');
+    expect(migration).toContain("DEFAULT 0");
+  });
+
+  it('defines a dedicated Catedral de Jaen POI and objectives seed migration', () => {
+    const migration = readMigrationFile(catedralSeedMigrationFilePath);
+
+    expect(migration).toContain('INSERT INTO pois');
+    expect(migration).toContain("'poi-catedral-de-jaen'");
+    expect(migration).toContain("'catedral-de-jaen'");
+    expect(migration).toContain("'Cathedral of Jaén'");
+    expect(migration).toContain('INSERT INTO visual_objectives');
+    expect(migration).toContain("'estatua-san-fernando'");
+    expect(migration).toContain("'mona-catedral-jaen'");
+    expect(migration).toContain("'placa-santa-catalina-coro'");
+    expect(migration).toContain("'organo-catedral-jaen'");
+    expect(migration).toContain("'tumba-don-alonso-suarez'");
+  });
+
   it('executes the migration set successfully in SQLite', () => {
     const database = createSchemaSnapshot();
 
@@ -171,7 +204,7 @@ describe('initial content schema migration', () => {
     database.close();
   });
 
-  it('seeds Jaen and the MVP route without adding POIs yet', () => {
+  it('seeds Jaen, the MVP route, and the first Catedral slice', () => {
     const database = createSchemaSnapshot();
 
     const destinations = database
@@ -213,8 +246,58 @@ describe('initial content schema migration', () => {
       title: string;
     }>;
 
-    const poiCount = database
-      .prepare('SELECT COUNT(*) AS count FROM pois')
+    const pois = database
+      .prepare(
+        `
+          SELECT id, route_id, slug, name, description, status, latitude, longitude,
+                 access_notes, indoor_mode, display_order
+          FROM pois
+          ORDER BY display_order, name
+        `,
+      )
+      .all() as Array<{
+      access_notes: string | null;
+      description: string | null;
+      display_order: number;
+      id: string;
+      indoor_mode: number;
+      latitude: number;
+      longitude: number;
+      name: string;
+      route_id: string;
+      slug: string;
+      status: string;
+    }>;
+
+    const visualObjectives = database
+      .prepare(
+        `
+          SELECT id, poi_id, slug, title, description, status, target_type,
+                 gps_radius_meters, difficulty, indoor_mode, display_order
+          FROM visual_objectives
+          ORDER BY display_order, title
+        `,
+      )
+      .all() as Array<{
+      description: string | null;
+      difficulty: string | null;
+      display_order: number;
+      gps_radius_meters: number | null;
+      id: string;
+      indoor_mode: number;
+      poi_id: string;
+      slug: string;
+      status: string;
+      target_type: string;
+      title: string;
+    }>;
+
+    const hintCount = database
+      .prepare('SELECT COUNT(*) AS count FROM hints')
+      .get() as { count: number };
+
+    const unlockableContentCount = database
+      .prepare('SELECT COUNT(*) AS count FROM unlockable_contents')
       .get() as { count: number };
 
     expect(destinations).toEqual([
@@ -245,7 +328,99 @@ describe('initial content schema migration', () => {
       },
     ]);
 
-    expect(poiCount.count).toBe(0);
+    expect(pois).toEqual([
+      {
+        access_notes:
+          'Located in Plaza de Santa María. Some objectives may require access to the cathedral interior, so opening hours and ticket availability should be checked before visiting.',
+        description:
+          'A monumental Renaissance cathedral in the heart of Jaén, where sacred architecture, hidden stone details and local legends make the city’s history feel alive.',
+        display_order: 0,
+        id: 'poi-catedral-de-jaen',
+        indoor_mode: 1,
+        latitude: 37.765738,
+        longitude: -3.789518,
+        name: 'Cathedral of Jaén',
+        route_id: 'route-jaen-echoes-of-stone',
+        slug: 'catedral-de-jaen',
+        status: 'published',
+      },
+    ]);
+
+    expect(visualObjectives).toEqual([
+      {
+        description:
+          'Find the statue of Saint Ferdinand, the Christian king linked to the conquest of Jaén and one of the key historical figures behind the city’s medieval memory.',
+        difficulty: 'easy',
+        display_order: 0,
+        gps_radius_meters: 20,
+        id: 'objective-catedral-de-jaen-estatua-san-fernando',
+        indoor_mode: 0,
+        poi_id: 'poi-catedral-de-jaen',
+        slug: 'estatua-san-fernando',
+        status: 'published',
+        target_type: 'statue',
+        title: 'Statue of Saint Ferdinand',
+      },
+      {
+        description:
+          'Find the small monkey sculpture wearing a turban on the exterior of Jaén Cathedral, one of the building’s strangest and most memorable hidden details.',
+        difficulty: 'hard',
+        display_order: 1,
+        gps_radius_meters: 3,
+        id: 'objective-catedral-de-jaen-mona-catedral-jaen',
+        indoor_mode: 0,
+        poi_id: 'poi-catedral-de-jaen',
+        slug: 'mona-catedral-jaen',
+        status: 'published',
+        target_type: 'architectural_detail',
+        title: 'Cathedral Monkey',
+      },
+      {
+        description:
+          'Find the wooden panel inside the choir stalls depicting Saint Catherine, a small decorative detail hidden among the carved seats of Jaén Cathedral.',
+        difficulty: 'medium',
+        display_order: 2,
+        gps_radius_meters: 5,
+        id: 'objective-catedral-de-jaen-placa-santa-catalina-coro',
+        indoor_mode: 1,
+        poi_id: 'poi-catedral-de-jaen',
+        slug: 'placa-santa-catalina-coro',
+        status: 'published',
+        target_type: 'decorative_panel',
+        title: 'Saint Catherine Choir Panel',
+      },
+      {
+        description:
+          'Find the cathedral organ, one of the most recognisable interior features of Jaén Cathedral, standing out through its pipes, scale and decorative presence.',
+        difficulty: 'easy',
+        display_order: 3,
+        gps_radius_meters: 12,
+        id: 'objective-catedral-de-jaen-organo-catedral-jaen',
+        indoor_mode: 1,
+        poi_id: 'poi-catedral-de-jaen',
+        slug: 'organo-catedral-jaen',
+        status: 'published',
+        target_type: 'architectural_detail',
+        title: 'Cathedral Organ',
+      },
+      {
+        description:
+          'Find the tomb of Don Alonso Suárez de la Fuente del Sauce, known as El Insepulto, one of the most intriguing funerary details inside Jaén Cathedral.',
+        difficulty: 'hard',
+        display_order: 4,
+        gps_radius_meters: 3,
+        id: 'objective-catedral-de-jaen-tumba-don-alonso-suarez',
+        indoor_mode: 1,
+        poi_id: 'poi-catedral-de-jaen',
+        slug: 'tumba-don-alonso-suarez',
+        status: 'published',
+        target_type: 'tomb',
+        title: 'Tomb of Don Alonso Suárez',
+      },
+    ]);
+
+    expect(hintCount.count).toBe(0);
+    expect(unlockableContentCount.count).toBe(0);
 
     database.close();
   });
@@ -273,9 +448,9 @@ describe('initial content schema migration', () => {
       );
 
       INSERT INTO visual_objectives (
-        id, poi_id, slug, title, status, target_type, gps_radius_meters, display_order, created_at, updated_at
+        id, poi_id, slug, title, status, target_type, gps_radius_meters, indoor_mode, display_order, created_at, updated_at
       ) VALUES (
-        'objective-test', 'poi-test', 'test-objective', 'Test Objective', 'published', 'visual_landmark', 25, 1, '2026-06-03T00:00:00.000Z', '2026-06-03T00:00:00.000Z'
+        'objective-test', 'poi-test', 'test-objective', 'Test Objective', 'published', 'visual_landmark', 25, 0, 1, '2026-06-03T00:00:00.000Z', '2026-06-03T00:00:00.000Z'
       );
     `);
 
@@ -302,9 +477,9 @@ describe('initial content schema migration', () => {
     expect(() =>
       database.exec(`
         INSERT INTO visual_objectives (
-          id, poi_id, slug, title, status, target_type, gps_radius_meters, display_order, created_at, updated_at
+          id, poi_id, slug, title, status, target_type, gps_radius_meters, indoor_mode, display_order, created_at, updated_at
         ) VALUES (
-          'objective-duplicate-order', 'poi-test', 'duplicate-order', 'Duplicate Objective Order', 'draft', 'visual_landmark', 25, 1, '2026-06-03T00:00:00.000Z', '2026-06-03T00:00:00.000Z'
+          'objective-duplicate-order', 'poi-test', 'duplicate-order', 'Duplicate Objective Order', 'draft', 'visual_landmark', 25, 0, 1, '2026-06-03T00:00:00.000Z', '2026-06-03T00:00:00.000Z'
         );
       `),
     ).toThrow();

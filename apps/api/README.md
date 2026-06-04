@@ -122,6 +122,10 @@ The first baseline content seed is [`0003_seed_jaen_and_route.sql`](./migrations
 
 [`0004_clear_external_jaen_cover_image.sql`](./migrations/0004_clear_external_jaen_cover_image.sql) then clears the temporary third-party `cover_image_url` by setting it to `null` until the project owns a stable asset.
 
+[`0005_add_visual_objectives_indoor_mode.sql`](./migrations/0005_add_visual_objectives_indoor_mode.sql) lets the repository distinguish interior and exterior objectives inside the same POI.
+
+[`0006_seed_catedral_de_jaen_poi_and_objectives.sql`](./migrations/0006_seed_catedral_de_jaen_poi_and_objectives.sql) introduces the first real POI slice for `Jaén: Echoes of Stone`: `Cathedral of Jaén` plus its first five published visual objectives.
+
 ## Naming and Platform Notes
 
 - Worker resource naming follows the `cityquest-<environment>-<resource>` convention.
