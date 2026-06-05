@@ -11,13 +11,11 @@ function createExecutionContext(): WorkerExecutionContext {
   };
 }
 
-function createPreparedStatementStub(
-  results: Record<string, unknown>[] = [],
-): D1PreparedStatement {
+function createPreparedStatementStub(results: Record<string, unknown>[] = []): D1PreparedStatement {
   return {
-    all: async () => ({
+    all: async <T = Record<string, unknown>>() => ({
       meta: {},
-      results,
+      results: results as T[],
       success: true,
     }),
     bind: () => createPreparedStatementStub(results),

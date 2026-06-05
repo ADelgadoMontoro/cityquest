@@ -1,3 +1,5 @@
+import { describe, expect, it, vi } from 'vitest';
+
 import { getCurrentObjectiveSnapshot } from '@/services/getCurrentObjectiveSnapshot';
 import { getObjectiveUnlockSnapshot } from '@/services/getObjectiveUnlockSnapshot';
 

@@ -131,6 +131,8 @@ The monorepo uses `npm workspaces` as its initial package management baseline. T
 - `npm run test:unit`
 - `npm run test:integration`
 - `npm run typecheck`
+- `npm run check:pre-commit`
+- `npm run check:pre-push`
 - `npm run clean`
 
 The scripts are wired at repository and workspace level.
@@ -143,14 +145,34 @@ Current behavior:
 - `npm run cf:login` and `npm run cf:whoami` expose the active Cloudflare auth flow from the repository root
 - `npm run build` validates the active app workspaces and also keeps the legacy `infra` workspace buildable as historical groundwork
 - the `api` build now includes a local Cloudflare Worker smoke validation instead of only a TypeScript emit step
-- `npm run test` executes the implemented active backend test suite and the legacy infrastructure suite
-- `npm run test:unit` executes the implemented active backend unit suite and the legacy infrastructure unit suite
-- `npm run test:integration` currently executes the implemented backend integration suite
+- `npm run test` executes the active backend suite, the legacy infrastructure suite, and the mobile automated suite
+- `npm run test:unit` executes the active backend unit suite, the legacy infrastructure unit suite, and the mobile unit suite
+- `npm run test:integration` executes the active backend integration suite and the mobile lightweight integration-style suite
+- `npm run check:pre-commit` is the fast local gate used by the git pre-commit hook
+- `npm run check:pre-push` is the heavier local gate used by the git pre-push hook
 - shared formatting, linting, and type-checking run across the repository
 
 Legacy AWS infrastructure scripts still exist under the `infra` workspace for historical reference. They are not the active MVP path, but they remain part of the default verification flow so the retained groundwork does not silently rot.
 
 This keeps the root scripts honest: they represent the capabilities that are actually implemented today instead of passing through placeholder workspace commands.
+
+## Git Hooks
+
+The repository now configures local git hooks through the `.husky/` directory.
+
+After `npm install`, the `prepare` script sets:
+
+- `core.hooksPath=.husky`
+
+Current local quality gates:
+
+- `pre-commit` runs `npm run check:pre-commit`
+  - currently `npm run lint`
+- `pre-push` runs `npm run check:pre-push`
+  - currently `npm run test && npm run typecheck`
+
+This keeps commits fast enough for day-to-day work while still blocking broken pushes before they
+reach the remote.
 
 ## What Is Real Today
 
