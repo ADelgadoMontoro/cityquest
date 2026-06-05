@@ -15,9 +15,9 @@
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
     "start": "expo start",
-    "test": "echo \"Mobile tests will be added when the first mobile slice is implemented.\"",
-    "test:integration": "echo \"Mobile integration tests will be added after Expo app flows are initialized.\"",
-    "test:unit": "echo \"Mobile unit tests will be added with the first mobile hooks and services.\"",
+    "test": "vitest run",
+    "test:integration": "vitest run tests/integration",
+    "test:unit": "vitest run tests/unit",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "web": "expo start --web"
   },

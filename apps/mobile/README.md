@@ -63,6 +63,37 @@ The Worker must be running locally for the selector to load:
 npm run api:dev
 ```
 
+## Testing
+
+The mobile workspace now includes an initial automated test layer focused on live-data adapters.
+
+Run everything:
+
+```bash
+npm run test --workspace @cityquest/mobile
+```
+
+Run only unit-level service tests:
+
+```bash
+npm run test:unit --workspace @cityquest/mobile
+```
+
+Run the lightweight integration-style service flow:
+
+```bash
+npm run test:integration --workspace @cityquest/mobile
+```
+
+Current emphasis:
+
+- Worker payload mapping into mobile models
+- current objective derivation
+- unlocked content delivery flow
+- edge cases such as `404` handling and safe defaults
+
+UI-heavy testing is intentionally kept for later once the gameplay flow stabilizes further.
+
 ## Structure
 
 ```text
@@ -75,4 +106,5 @@ src/
   screens/     # Screen-level UI
   services/    # App-facing service adapters and temporary MVP data sources
   types/       # Mobile-specific types
+tests/         # Mobile automated tests for service adapters and MVP flow checks
 ```

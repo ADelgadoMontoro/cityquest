@@ -408,6 +408,66 @@ describe('workerEntrypoint integration', () => {
     });
   });
 
+  it('returns not-found for an unknown published route slug', async () => {
+    const response = await workerEntrypoint.fetch(
+      new Request('http://localhost/routes/unknown-route'),
+      createEnv({
+        DB: createDatabaseStubWithPreparedResults([[]]),
+      }),
+      createExecutionContext(),
+    );
+
+    expect(response.status).toBe(404);
+    expect(response.headers.get('access-control-allow-origin')).toBe('*');
+    await expect(response.json()).resolves.toEqual({
+      error: {
+        code: 'NOT_FOUND',
+        message: 'Route not found.',
+      },
+      success: false,
+    });
+  });
+
+  it('returns not-found for an unknown objective slug at /objectives/:objectiveSlug/unlocks', async () => {
+    const response = await workerEntrypoint.fetch(
+      new Request('http://localhost/objectives/unknown-objective/unlocks'),
+      createEnv({
+        DB: createDatabaseStubWithPreparedResults([[]]),
+      }),
+      createExecutionContext(),
+    );
+
+    expect(response.status).toBe(404);
+    expect(response.headers.get('access-control-allow-origin')).toBe('*');
+    await expect(response.json()).resolves.toEqual({
+      error: {
+        code: 'NOT_FOUND',
+        message: 'Route not found.',
+      },
+      success: false,
+    });
+  });
+
+  it('returns not-found for an unknown objective slug at /objectives/:objectiveSlug/hints', async () => {
+    const response = await workerEntrypoint.fetch(
+      new Request('http://localhost/objectives/unknown-objective/hints'),
+      createEnv({
+        DB: createDatabaseStubWithPreparedResults([[]]),
+      }),
+      createExecutionContext(),
+    );
+
+    expect(response.status).toBe(404);
+    expect(response.headers.get('access-control-allow-origin')).toBe('*');
+    await expect(response.json()).resolves.toEqual({
+      error: {
+        code: 'NOT_FOUND',
+        message: 'Route not found.',
+      },
+      success: false,
+    });
+  });
+
   it('returns the initialization response at the root route', async () => {
     const response = await workerEntrypoint.fetch(
       new Request('http://localhost/'),
