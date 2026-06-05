@@ -24,6 +24,7 @@ export type CurrentObjectiveRoute = {
 export type ObjectiveRewardRoute = {
   name: 'objectiveReward';
   params: {
+    entryMode?: 'direct' | 'mockValidation';
     objectiveSlug?: string;
     routeSlug: string;
   };

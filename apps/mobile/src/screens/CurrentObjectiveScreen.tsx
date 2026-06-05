@@ -6,6 +6,7 @@ import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-nat
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { getCurrentObjectiveSnapshot } from '@/services/getCurrentObjectiveSnapshot';
+import { getObjectiveUnlockSnapshot } from '@/services/getObjectiveUnlockSnapshot';
 import type { MobileCurrentObjectiveSnapshot } from '@/types/route';
 
 type CurrentObjectiveScreenProps = {
@@ -26,10 +27,13 @@ export function CurrentObjectiveScreen({
   );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMockValidating, setIsMockValidating] = useState(false);
+  const [mockValidationError, setMockValidationError] = useState<string | null>(null);
 
   async function loadCurrentObjective() {
     setErrorMessage(null);
     setIsLoading(true);
+    setMockValidationError(null);
 
     try {
       const snapshot = await getCurrentObjectiveSnapshot(routeSlug, objectiveSlug);
@@ -43,6 +47,40 @@ export function CurrentObjectiveScreen({
       setCurrentObjective(null);
     } finally {
       setIsLoading(false);
+    }
+  }
+
+  async function runMockValidationFlow() {
+    if (!currentObjective) {
+      return;
+    }
+
+    setMockValidationError(null);
+    setIsMockValidating(true);
+
+    try {
+      const rewardSnapshot = await getObjectiveUnlockSnapshot(
+        routeSlug,
+        currentObjective.objective.slug,
+      );
+
+      if (!rewardSnapshot || rewardSnapshot.unlockableContents.length === 0) {
+        setMockValidationError(
+          'The mocked success flow resolved the objective, but no published reward is available yet.',
+        );
+
+        return;
+      }
+
+      onOpenUnlockedStory(routeSlug, currentObjective.objective.slug);
+    } catch (error) {
+      setMockValidationError(
+        error instanceof Error
+          ? error.message
+          : 'The mocked validation step could not confirm reward delivery from the live backend.',
+      );
+    } finally {
+      setIsMockValidating(false);
     }
   }
 
@@ -132,14 +170,24 @@ export function CurrentObjectiveScreen({
         </View>
 
         <View style={styles.supportCard}>
-          <Text style={styles.supportTitle}>Narrative reward</Text>
+          <Text style={styles.supportTitle}>Mock validation flow</Text>
           <Text style={styles.supportBody}>
-            The full validation gate is still a later EVO, but the first unlockable story is
-            already live in D1. You can open it now to exercise the reward payload end to end.
+            This temporary action stands in for the future GPS and camera validation pipeline. It
+            checks that the live reward can be resolved and then moves the user into the unlocked
+            story flow.
           </Text>
+          {mockValidationError ? (
+            <Text style={styles.errorText}>{mockValidationError}</Text>
+          ) : (
+            <Text style={styles.metaText}>
+              No completion is persisted yet. This is an explicit temporary success transition for
+              the MVP slice.
+            </Text>
+          )}
           <PrimaryButton
-            label="Open Unlocked Story"
-            onPress={() => onOpenUnlockedStory(routeSlug, currentObjective.objective.slug)}
+            disabled={isMockValidating}
+            label={isMockValidating ? 'Validating Mock Success...' : 'Validate Objective (Mock)'}
+            onPress={() => void runMockValidationFlow()}
           />
         </View>
 
@@ -239,5 +287,16 @@ const styles = StyleSheet.create({
     color: '#4f5663',
     fontSize: 15,
     lineHeight: 23,
+  },
+  metaText: {
+    color: '#7a6f61',
+    fontSize: 13,
+    lineHeight: 20,
+  },
+  errorText: {
+    color: '#a32626',
+    fontSize: 14,
+    lineHeight: 21,
+    fontWeight: '600',
   },
 });

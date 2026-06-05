@@ -9,12 +9,14 @@ import { getObjectiveUnlockSnapshot } from '@/services/getObjectiveUnlockSnapsho
 import type { MobileObjectiveUnlockSnapshot } from '@/types/route';
 
 type ObjectiveRewardScreenProps = {
+  entryMode?: 'direct' | 'mockValidation';
   objectiveSlug?: string;
   onBack: () => void;
   routeSlug: string;
 };
 
 export function ObjectiveRewardScreen({
+  entryMode = 'direct',
   objectiveSlug,
   onBack,
   routeSlug,
@@ -94,6 +96,10 @@ export function ObjectiveRewardScreen({
   }
 
   const primaryUnlock = unlockSnapshot.unlockableContents[0];
+  const rewardDescription =
+    entryMode === 'mockValidation'
+      ? 'This reward was reached through the temporary mocked-success flow. The future GPS and camera validation layers can replace that trigger without changing the reward experience.'
+      : 'This is the first real narrative payoff delivered from D1. The validation gate is still a later EVO, but the reward content itself is now live.';
 
   return (
     <ScreenContainer>
@@ -101,10 +107,7 @@ export function ObjectiveRewardScreen({
       <ScrollView contentContainerStyle={styles.wrapper}>
         <Text style={styles.eyebrow}>Unlocked Story</Text>
         <Text style={styles.title}>{primaryUnlock.title}</Text>
-        <Text style={styles.description}>
-          This is the first real narrative payoff delivered from D1. The validation gate is still a
-          later EVO, but the reward content itself is now live.
-        </Text>
+        <Text style={styles.description}>{rewardDescription}</Text>
 
         <View style={styles.summaryCard}>
           <Text style={styles.summaryLabel}>Objective completed context</Text>

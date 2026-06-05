@@ -39,8 +39,8 @@ This flow is already aligned with the real backend slices implemented in `apps/a
 
 The destination selector, route detail screen, current-objective screen, and unlocked-story screen
 now all read the live Worker API. The current-objective view is still intentionally pre-gameplay:
-it shows the real objective context, opens the real reward payload, and keeps hints/camera as
-honest placeholders until later EVOs add those capabilities for real.
+it shows the real objective context, runs a mocked-success transition into the reward flow, and
+keeps hints/camera as honest placeholders until later EVOs add those capabilities for real.
 
 ## Local API Configuration
 

@@ -73,6 +73,7 @@ export function AppNavigator(): React.JSX.Element {
           navigate({
             name: 'objectiveReward',
             params: {
+              entryMode: 'mockValidation',
               objectiveSlug,
               routeSlug,
             },
@@ -86,6 +87,7 @@ export function AppNavigator(): React.JSX.Element {
   if (currentRoute.name === 'objectiveReward') {
     return (
       <ObjectiveRewardScreen
+        entryMode={currentRoute.params.entryMode}
         objectiveSlug={currentRoute.params.objectiveSlug}
         onBack={goBack}
         routeSlug={currentRoute.params.routeSlug}
