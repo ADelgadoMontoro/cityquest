@@ -91,7 +91,12 @@ Prefer integration tests over excessive mocking.
 
 Use composition, UI, and flow-oriented tests once each app is bootstrapped.
 
-At the current stage of the repository, the real application-level automated tests live in `apps/api` around the active Cloudflare Workers backend foundation, and the infrastructure workspace has real CDK unit tests in `infra/tests/unit`. Mobile and admin still expose bootstrap placeholders for future test suites rather than claiming coverage they do not yet have.
+At the current stage of the repository:
+
+- `apps/api` has real backend unit and integration tests around the active Cloudflare Workers foundation
+- `infra/tests/unit` has real CDK unit tests
+- `apps/mobile` now has real automated coverage for live-data adapters and the first MVP service flow
+- `apps/admin` still mainly exposes future testing placeholders rather than feature-level coverage
 
 ## Repository Layout
 
@@ -114,8 +119,9 @@ Current direction:
 
 - `Vitest` for package-level tests and the backend unit/integration tests in `apps/api`
 - `Vitest` with CDK assertions for infrastructure unit tests in `infra`
+- `Vitest` for mobile service and lightweight integration-style tests in `apps/mobile`
 - `Testing Library` for the admin web app
-- `React Native Testing Library` for the mobile app
+- `React Native Testing Library` for future mobile screen tests once the gameplay UI stabilizes further
 - `Playwright` for admin end-to-end tests
 - mobile end-to-end tooling to be decided later based on MVP needs
 
@@ -127,3 +133,21 @@ The exact testing tools for:
 - Next.js
 
 remain to be finalized when those applications start adding real feature tests. The active backend runtime decision is now documented in ADR-0012.
+
+## Current Pragmatic Boundary
+
+CityQuest now has enough real product flow that automated tests should protect:
+
+- Worker response contracts
+- D1-backed content assumptions
+- mobile payload mapping
+- first gameplay-to-reward orchestration paths
+
+But it still does **not** justify a heavy end-to-end or BDD stack yet.
+
+Current practical rule:
+
+- prefer `Vitest` for backend and mobile
+- prefer fast service/adapter tests before deep UI tests
+- add UI and end-to-end tooling only when flows stop shifting every few EVOs
+- keep Cucumber/BDD deferred until product scenarios become more stable and shared across roles

@@ -29,17 +29,23 @@ The current real product slice in the repository is:
 - POI `Cathedral of Jaén`
 - POI `Arab Baths of Jaén`
 - published visual objectives for both POIs
+- progressive hints for `Statue of Saint Ferdinand`
+- unlockable narrative content for `Statue of Saint Ferdinand`
 - public `GET /destinations` endpoint
 - public `GET /routes/jaen-echoes-of-stone` endpoint
+- public `GET /objectives/estatua-san-fernando/hints` endpoint
 - public `GET /objectives/estatua-san-fernando/unlocks` endpoint
 - mobile navigation flow through:
   - `welcome`
   - `destinations`
   - `route detail`
   - `current objective`
+  - `objective reward`
 - live-backed mobile destination selector
 - live-backed mobile route detail screen
-- live-backed current-objective gameplay-prep screen
+- live-backed current-objective gameplay screen with mock validation transition
+- live-backed unlocked reward screen
+- initial automated mobile and backend regression tests around the live MVP slice
 
 That means the project has already moved beyond backend foundation only: the active API and D1 database now contain real MVP content that later endpoints and screens can consume.
 
@@ -49,11 +55,11 @@ These percentages are approximate engineering snapshots, not formal project acco
 
 | Area | Progress | Notes |
 | --- | --- | --- |
-| Platform / Infra | `[########--] 80%` | Cloudflare direction, Worker runtime, D1 binding, migrations, and verification flow are in place. |
-| API / Data | `[########--] 80%` | Healthcheck, HTTP foundation, schema, seeds, public content endpoints, and the first unlockable-content delivery path are done. |
-| Mobile | `[#####-----] 50%` | Expo navigation is in place and the MVP flow already consumes live destinations, route detail, and current objective data. |
+| Platform / Infra | `[########--] 82%` | Cloudflare direction, Worker runtime, D1 binding, migrations, verification flow, and local git quality gates are in place. |
+| API / Data | `[#########-] 85%` | Healthcheck, HTTP foundation, schema, seeds, public content endpoints, hints, unlock delivery, and contract/edge coverage are in place. |
+| Mobile | `[######----] 65%` | Expo navigation is in place and the MVP flow already consumes live destinations, route detail, current objective, mocked-success reward flow, and unlocked content. |
 | Admin | `[##--------] 20%` | Next.js foundation exists, but real content management flows are still pending. |
-| Overall MVP | `[######----] 65%` | Foundations, real seeded content, public endpoints, first unlockable narrative delivery, and the first mobile consumption flow are in place. |
+| Overall MVP | `[#######---] 72%` | Foundations, real seeded content, public endpoints, hints, reward delivery, mocked-success gameplay flow, and first automated quality gates are in place. |
 
 ## Start Here
 
@@ -182,13 +188,16 @@ The repository already gives you:
 - a formal `GET /health` endpoint
 - a public `GET /destinations` endpoint
 - a public `GET /routes/jaen-echoes-of-stone` endpoint
+- a public `GET /objectives/estatua-san-fernando/hints` endpoint
+- a public `GET /objectives/estatua-san-fernando/unlocks` endpoint
 - D1 schema and migration flow
 - real seeded MVP content for `Jaén: Echoes of Stone`
 - backend unit and integration tests
-- a mobile flow that already consumes the live MVP route slice
+- mobile automated tests for live data adapters and the first service-level MVP flow
+- a mobile flow that already consumes the live MVP route slice and mocked-success reward path
 - admin foundations ready to consume future public endpoints
 
-The next high-value engineering step is no longer exposing the first public endpoints. It is widening gameplay on top of the live mobile flow, and then expanding admin, progress, and unlock capabilities around the same seeded content.
+The next high-value engineering step is no longer exposing the first public endpoints. It is widening gameplay on top of the live mobile flow, then expanding progress, real validation, and admin capabilities around the same seeded content.
 
 ## Architecture Decisions
 
