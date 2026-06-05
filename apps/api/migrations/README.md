@@ -15,6 +15,7 @@ This directory is reserved for future `Cloudflare D1` SQL migrations owned by th
 0006_seed_catedral_de_jaen_poi_and_objectives.sql
 0007_seed_banos_arabes_poi_and_objectives.sql
 0008_seed_statue_of_saint_ferdinand_unlockable_content.sql
+0009_seed_statue_of_saint_ferdinand_hints.sql
 ```
 
 ## Purpose
@@ -59,6 +60,10 @@ The next content seed introduces:
 The next reward-content seed introduces:
 
 - unlockable narrative content for `Statue of Saint Ferdinand`
+
+The next hints seed introduces:
+
+- three progressive hints for `Statue of Saint Ferdinand`
 
 It intentionally defers:
 

@@ -151,6 +151,8 @@ The first baseline content seed is [`0003_seed_jaen_and_route.sql`](./migrations
 
 [`0008_seed_statue_of_saint_ferdinand_unlockable_content.sql`](./migrations/0008_seed_statue_of_saint_ferdinand_unlockable_content.sql) introduces the first real unlockable narrative content for the objective `estatua-san-fernando`.
 
+[`0009_seed_statue_of_saint_ferdinand_hints.sql`](./migrations/0009_seed_statue_of_saint_ferdinand_hints.sql) introduces the first three progressive hints for the same objective, making the gameplay-help layer real in D1 even before a dedicated hint-delivery endpoint exists.
+
 The first public read endpoints now sit on top of that seeded baseline:
 
 - `GET /destinations`
@@ -161,6 +163,7 @@ Important nuance:
 
 - this unlock endpoint does not claim to perform real validation yet
 - it is the first backend-owned reward delivery path, ready for later gameplay slices to call after mocked or real validation succeeds
+- seeded hints now exist in D1, but they are not yet exposed through a dedicated API contract
 
 ## Naming and Platform Notes
 

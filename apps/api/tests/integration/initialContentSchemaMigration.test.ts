@@ -39,6 +39,10 @@ const statueOfSaintFerdinandUnlockableContentMigrationFilePath = resolve(
   migrationsDirectoryPath,
   '0008_seed_statue_of_saint_ferdinand_unlockable_content.sql',
 );
+const statueOfSaintFerdinandHintsMigrationFilePath = resolve(
+  migrationsDirectoryPath,
+  '0009_seed_statue_of_saint_ferdinand_hints.sql',
+);
 
 function readMigrationFile(filePath: string) {
   return readFileSync(filePath, 'utf-8');
@@ -71,6 +75,7 @@ describe('initial content schema migration', () => {
     expect(existsSync(catedralSeedMigrationFilePath)).toBe(true);
     expect(existsSync(banosArabesSeedMigrationFilePath)).toBe(true);
     expect(existsSync(statueOfSaintFerdinandUnlockableContentMigrationFilePath)).toBe(true);
+    expect(existsSync(statueOfSaintFerdinandHintsMigrationFilePath)).toBe(true);
   });
 
   it('defines the core MVP content tables', () => {
@@ -200,6 +205,16 @@ describe('initial content schema migration', () => {
     expect(migration).toContain("'The King Who Changed Jaén'");
     expect(migration).toContain("'text'");
     expect(migration).toContain("'published'");
+  });
+
+  it('defines a dedicated hints seed migration for Statue of Saint Ferdinand', () => {
+    const migration = readMigrationFile(statueOfSaintFerdinandHintsMigrationFilePath);
+
+    expect(migration).toContain('INSERT INTO hints');
+    expect(migration).toContain("'objective-catedral-de-jaen-estatua-san-fernando'");
+    expect(migration).toContain("'hint-estatua-san-fernando-level-1'");
+    expect(migration).toContain("'hint-estatua-san-fernando-level-2'");
+    expect(migration).toContain("'hint-estatua-san-fernando-level-3'");
   });
 
   it('executes the migration set successfully in SQLite', () => {
@@ -334,6 +349,22 @@ describe('initial content schema migration', () => {
     const hintCount = database
       .prepare('SELECT COUNT(*) AS count FROM hints')
       .get() as { count: number };
+
+    const hints = database
+      .prepare(
+        `
+          SELECT id, objective_id, level, text, penalizes_perfect_completion
+          FROM hints
+          ORDER BY objective_id, level
+        `,
+      )
+      .all() as Array<{
+      id: string;
+      level: number;
+      objective_id: string;
+      penalizes_perfect_completion: number;
+      text: string;
+    }>;
 
     const unlockableContentCount = database
       .prepare('SELECT COUNT(*) AS count FROM unlockable_contents')
@@ -565,7 +596,30 @@ describe('initial content schema migration', () => {
       },
     ]);
 
-    expect(hintCount.count).toBe(0);
+    expect(hintCount.count).toBe(3);
+    expect(hints).toEqual([
+      {
+        id: 'hint-estatua-san-fernando-level-1',
+        level: 1,
+        objective_id: 'objective-catedral-de-jaen-estatua-san-fernando',
+        penalizes_perfect_completion: 0,
+        text: 'Despite being called “the Saint”, he is the only one who does not belong to the Church.',
+      },
+      {
+        id: 'hint-estatua-san-fernando-level-2',
+        level: 2,
+        objective_id: 'objective-catedral-de-jaen-estatua-san-fernando',
+        penalizes_perfect_completion: 1,
+        text: 'He is Ferdinand III, but he could also be called Ferdinand V.',
+      },
+      {
+        id: 'hint-estatua-san-fernando-level-3',
+        level: 3,
+        objective_id: 'objective-catedral-de-jaen-estatua-san-fernando',
+        penalizes_perfect_completion: 1,
+        text: 'He stands in the centre, surrounded by 8 other statues.',
+      },
+    ]);
     expect(unlockableContentCount.count).toBe(1);
     expect(unlockableContents).toEqual([
       {
