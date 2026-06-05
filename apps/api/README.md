@@ -14,6 +14,7 @@ The current bootstrap intentionally includes:
 - a centralized HTTP routing and transport foundation for future API endpoints
 - a public `GET /destinations` endpoint backed by D1
 - a public `GET /routes/jaen-echoes-of-stone` endpoint backed by D1
+- a public `GET /objectives/estatua-san-fernando/hints` endpoint backed by D1
 - a public `GET /objectives/estatua-san-fernando/unlocks` endpoint backed by D1
 - local development through `Wrangler`
 - build-time Worker runtime verification through a local Wrangler smoke check
@@ -98,6 +99,12 @@ To validate the current real route detail payload:
 curl http://localhost:8787/routes/jaen-echoes-of-stone
 ```
 
+To validate the first progressive hints payload:
+
+```bash
+curl http://localhost:8787/objectives/estatua-san-fernando/hints
+```
+
 To validate the first unlockable-content payload:
 
 ```bash
@@ -157,13 +164,14 @@ The first public read endpoints now sit on top of that seeded baseline:
 
 - `GET /destinations`
 - `GET /routes/jaen-echoes-of-stone`
+- `GET /objectives/estatua-san-fernando/hints`
 - `GET /objectives/estatua-san-fernando/unlocks`
 
 Important nuance:
 
 - this unlock endpoint does not claim to perform real validation yet
 - it is the first backend-owned reward delivery path, ready for later gameplay slices to call after mocked or real validation succeeds
-- seeded hints now exist in D1, but they are not yet exposed through a dedicated API contract
+- hints now exist in D1 and are exposed through a dedicated objective-level API contract
 
 ## Naming and Platform Notes
 

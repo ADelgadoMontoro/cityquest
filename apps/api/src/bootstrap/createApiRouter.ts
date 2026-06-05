@@ -1,6 +1,7 @@
 import { createMethodNotAllowedResponse, createNotFoundResponse } from '../http/errors';
 import { applyCorsHeaders, createPreflightResponse } from '../http/cors';
 import { createHealthRouteHandler } from '../routes/createHealthRouteHandler';
+import { createGetObjectiveHintsRouteHandler } from '../routes/createGetObjectiveHintsRouteHandler';
 import { createGetRouteDetailRouteHandler } from '../routes/createGetRouteDetailRouteHandler';
 import { createGetObjectiveUnlocksRouteHandler } from '../routes/createGetObjectiveUnlocksRouteHandler';
 import { createInitializationRouteHandler } from '../routes/createInitializationRouteHandler';
@@ -60,6 +61,12 @@ export function createApiRouter({ config }: CreateApiRouterDependencies): ApiRou
         GET: createGetObjectiveUnlocksRouteHandler(),
       },
       pathname: '/objectives/:objectiveSlug/unlocks',
+    },
+    {
+      methods: {
+        GET: createGetObjectiveHintsRouteHandler(),
+      },
+      pathname: '/objectives/:objectiveSlug/hints',
     },
   ];
 

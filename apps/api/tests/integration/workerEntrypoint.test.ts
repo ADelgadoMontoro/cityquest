@@ -329,6 +329,85 @@ describe('workerEntrypoint integration', () => {
     });
   });
 
+  it('returns progressive hints for a published objective at /objectives/estatua-san-fernando/hints', async () => {
+    const response = await workerEntrypoint.fetch(
+      new Request('http://localhost/objectives/estatua-san-fernando/hints'),
+      createEnv({
+        DB: createDatabaseStubWithPreparedResults([
+          [
+            {
+              id: 'objective-catedral-de-jaen-estatua-san-fernando',
+              slug: 'estatua-san-fernando',
+              title: 'Statue of Saint Ferdinand',
+            },
+          ],
+          [
+            {
+              id: 'hint-estatua-san-fernando-level-1',
+              level: 1,
+              objective_id: 'objective-catedral-de-jaen-estatua-san-fernando',
+              penalizes_perfect_completion: 0,
+              text: 'Despite being called “the Saint”, he is the only one who does not belong to the Church.',
+            },
+            {
+              id: 'hint-estatua-san-fernando-level-2',
+              level: 2,
+              objective_id: 'objective-catedral-de-jaen-estatua-san-fernando',
+              penalizes_perfect_completion: 1,
+              text: 'He is Ferdinand III, but he could also be called Ferdinand V.',
+            },
+            {
+              id: 'hint-estatua-san-fernando-level-3',
+              level: 3,
+              objective_id: 'objective-catedral-de-jaen-estatua-san-fernando',
+              penalizes_perfect_completion: 1,
+              text: 'He stands in the centre, surrounded by 8 other statues.',
+            },
+          ],
+        ]),
+      }),
+      createExecutionContext(),
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toBe('application/json; charset=utf-8');
+    expect(response.headers.get('access-control-allow-origin')).toBe('*');
+
+    await expect(response.json()).resolves.toEqual({
+      data: {
+        objective: {
+          id: 'objective-catedral-de-jaen-estatua-san-fernando',
+          slug: 'estatua-san-fernando',
+          title: 'Statue of Saint Ferdinand',
+        },
+        hints: [
+          {
+            id: 'hint-estatua-san-fernando-level-1',
+            level: 1,
+            penalizesPerfectCompletion: 0,
+            text: 'Despite being called “the Saint”, he is the only one who does not belong to the Church.',
+          },
+          {
+            id: 'hint-estatua-san-fernando-level-2',
+            level: 2,
+            penalizesPerfectCompletion: 1,
+            text: 'He is Ferdinand III, but he could also be called Ferdinand V.',
+          },
+          {
+            id: 'hint-estatua-san-fernando-level-3',
+            level: 3,
+            penalizesPerfectCompletion: 1,
+            text: 'He stands in the centre, surrounded by 8 other statues.',
+          },
+        ],
+      },
+      meta: {
+        count: 3,
+      },
+      success: true,
+    });
+  });
+
   it('returns the initialization response at the root route', async () => {
     const response = await workerEntrypoint.fetch(
       new Request('http://localhost/'),
