@@ -21,10 +21,19 @@ export type CurrentObjectiveRoute = {
   };
 };
 
+export type ObjectiveRewardRoute = {
+  name: 'objectiveReward';
+  params: {
+    objectiveSlug?: string;
+    routeSlug: string;
+  };
+};
+
 export type AppRoute =
   | WelcomeRoute
   | DestinationsRoute
   | RouteDetailRoute
-  | CurrentObjectiveRoute;
+  | CurrentObjectiveRoute
+  | ObjectiveRewardRoute;
 
 export type AppScreenName = AppRoute['name'];

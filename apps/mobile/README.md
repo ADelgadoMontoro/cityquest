@@ -16,6 +16,7 @@ This bootstrap provides:
 - a live destination selector backed by the Worker API
 - a live route detail screen backed by the Worker API
 - a live-backed current-objective screen prepared for the next gameplay slice
+- a live-backed unlocked-story screen fed by the Worker API
 - an initial folder structure for app growth
 - shared workspace scripts aligned with the monorepo
 
@@ -28,16 +29,18 @@ framework yet:
 2. `destinations`
 3. `routeDetail`
 4. `currentObjective`
+5. `objectiveReward`
 
 This flow is already aligned with the real backend slices implemented in `apps/api`:
 
 - `GET /destinations`
 - `GET /routes/jaen-echoes-of-stone`
+- `GET /objectives/estatua-san-fernando/unlocks`
 
-The destination selector, route detail screen, and current-objective screen now all read the live
-Worker API. The current-objective view is still intentionally pre-gameplay: it shows the real
-objective context and keeps hints/camera as honest placeholders until later EVOs add those
-capabilities for real.
+The destination selector, route detail screen, current-objective screen, and unlocked-story screen
+now all read the live Worker API. The current-objective view is still intentionally pre-gameplay:
+it shows the real objective context, opens the real reward payload, and keeps hints/camera as
+honest placeholders until later EVOs add those capabilities for real.
 
 ## Local API Configuration
 

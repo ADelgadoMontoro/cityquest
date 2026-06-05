@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { CurrentObjectiveScreen } from '@/screens/CurrentObjectiveScreen';
 import { DestinationsScreen } from '@/screens/DestinationsScreen';
+import { ObjectiveRewardScreen } from '@/screens/ObjectiveRewardScreen';
 import { RouteDetailScreen } from '@/screens/RouteDetailScreen';
 import { WelcomeScreen } from '@/screens/WelcomeScreen';
 import type { AppRoute } from '@/types/navigation';
@@ -66,6 +67,25 @@ export function AppNavigator(): React.JSX.Element {
   if (currentRoute.name === 'currentObjective') {
     return (
       <CurrentObjectiveScreen
+        objectiveSlug={currentRoute.params.objectiveSlug}
+        onBack={goBack}
+        onOpenUnlockedStory={(routeSlug, objectiveSlug) =>
+          navigate({
+            name: 'objectiveReward',
+            params: {
+              objectiveSlug,
+              routeSlug,
+            },
+          })
+        }
+        routeSlug={currentRoute.params.routeSlug}
+      />
+    );
+  }
+
+  if (currentRoute.name === 'objectiveReward') {
+    return (
+      <ObjectiveRewardScreen
         objectiveSlug={currentRoute.params.objectiveSlug}
         onBack={goBack}
         routeSlug={currentRoute.params.routeSlug}

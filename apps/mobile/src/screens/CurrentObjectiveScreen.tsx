@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
@@ -11,12 +11,14 @@ import type { MobileCurrentObjectiveSnapshot } from '@/types/route';
 type CurrentObjectiveScreenProps = {
   objectiveSlug?: string;
   onBack: () => void;
+  onOpenUnlockedStory: (routeSlug: string, objectiveSlug?: string) => void;
   routeSlug: string;
 };
 
 export function CurrentObjectiveScreen({
   objectiveSlug,
   onBack,
+  onOpenUnlockedStory,
   routeSlug,
 }: CurrentObjectiveScreenProps): React.JSX.Element {
   const [currentObjective, setCurrentObjective] = useState<MobileCurrentObjectiveSnapshot | null>(
@@ -99,7 +101,7 @@ export function CurrentObjectiveScreen({
   return (
     <ScreenContainer>
       <StatusBar style="dark" />
-      <View style={styles.wrapper}>
+      <ScrollView contentContainerStyle={styles.wrapper}>
         <Text style={styles.eyebrow}>Current Objective</Text>
         <Text style={styles.title}>{currentObjective.objective.title}</Text>
         <Text style={styles.description}>
@@ -130,10 +132,22 @@ export function CurrentObjectiveScreen({
         </View>
 
         <View style={styles.supportCard}>
+          <Text style={styles.supportTitle}>Narrative reward</Text>
+          <Text style={styles.supportBody}>
+            The full validation gate is still a later EVO, but the first unlockable story is
+            already live in D1. You can open it now to exercise the reward payload end to end.
+          </Text>
+          <PrimaryButton
+            label="Open Unlocked Story"
+            onPress={() => onOpenUnlockedStory(routeSlug, currentObjective.objective.slug)}
+          />
+        </View>
+
+        <View style={styles.supportCard}>
           <Text style={styles.supportTitle}>Progressive hints</Text>
           <Text style={styles.supportBody}>
-            Hints will appear here once they are seeded in D1. For now, this screen shows the live
-            objective and the exact place where layered help can plug into the MVP flow.
+            Hints are already seeded in D1 and exposed by the Worker API. The reveal interaction for
+            this screen is the next missing slice.
           </Text>
           <PrimaryButton disabled label="Hints Coming Soon" onPress={() => undefined} />
         </View>
@@ -148,14 +162,14 @@ export function CurrentObjectiveScreen({
         </View>
 
         <PrimaryButton label="Back to Route Detail" onPress={onBack} />
-      </View>
+      </ScrollView>
     </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
   wrapper: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: 24,
     paddingVertical: 32,
     gap: 18,

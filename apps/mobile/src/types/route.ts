@@ -9,6 +9,17 @@ export type MobileObjectiveSummary = {
   displayOrder: number;
 };
 
+export type MobileUnlockableContent = {
+  audioUrl: string | null;
+  contentType: string;
+  displayOrder: number;
+  id: string;
+  imageUrl: string | null;
+  longText: string;
+  shortText: string;
+  title: string;
+};
+
 export type MobilePoiDetail = {
   slug: string;
   name: string;
@@ -39,4 +50,16 @@ export type MobileCurrentObjectiveSnapshot = {
   poiName: string;
   routeSlug: string;
   routeTitle: string;
+};
+
+export type MobileObjectiveUnlockSnapshot = {
+  destinationName: string;
+  objective: {
+    slug: string;
+    title: string;
+  };
+  poiName: string;
+  routeSlug: string;
+  routeTitle: string;
+  unlockableContents: MobileUnlockableContent[];
 };
