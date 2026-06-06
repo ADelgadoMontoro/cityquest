@@ -1,12 +1,24 @@
 import { useEffect, useState } from 'react';
 
 import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { ScreenContainer } from '@/components/ScreenContainer';
 import { getCurrentObjectiveSnapshot } from '@/services/getCurrentObjectiveSnapshot';
 import { getObjectiveUnlockSnapshot } from '@/services/getObjectiveUnlockSnapshot';
+import {
+  captureObjectiveImage,
+  selectObjectiveImage,
+} from '@/services/objectiveImageCapture';
+import type { MobileObjectiveCaptureAsset } from '@/types/objectiveCapture';
 import type { MobileCurrentObjectiveSnapshot } from '@/types/route';
 
 type CurrentObjectiveScreenProps = {
@@ -29,6 +41,10 @@ export function CurrentObjectiveScreen({
   const [isLoading, setIsLoading] = useState(true);
   const [isMockValidating, setIsMockValidating] = useState(false);
   const [mockValidationError, setMockValidationError] = useState<string | null>(null);
+  const [captureError, setCaptureError] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<MobileObjectiveCaptureAsset | null>(null);
+  const [isCapturing, setIsCapturing] = useState(false);
+  const [isSelectingFromLibrary, setIsSelectingFromLibrary] = useState(false);
 
   async function loadCurrentObjective() {
     setErrorMessage(null);
@@ -50,8 +66,56 @@ export function CurrentObjectiveScreen({
     }
   }
 
+  async function handleCaptureImage() {
+    setCaptureError(null);
+    setIsCapturing(true);
+
+    try {
+      const image = await captureObjectiveImage();
+
+      if (image) {
+        setSelectedImage(image);
+      }
+    } catch (error) {
+      setCaptureError(
+        error instanceof Error
+          ? error.message
+          : 'The app could not open the camera for this objective.',
+      );
+    } finally {
+      setIsCapturing(false);
+    }
+  }
+
+  async function handleSelectImageFromLibrary() {
+    setCaptureError(null);
+    setIsSelectingFromLibrary(true);
+
+    try {
+      const image = await selectObjectiveImage();
+
+      if (image) {
+        setSelectedImage(image);
+      }
+    } catch (error) {
+      setCaptureError(
+        error instanceof Error
+          ? error.message
+          : 'The app could not open the media library for this objective.',
+      );
+    } finally {
+      setIsSelectingFromLibrary(false);
+    }
+  }
+
+  function clearSelectedImage() {
+    setCaptureError(null);
+    setMockValidationError(null);
+    setSelectedImage(null);
+  }
+
   async function runMockValidationFlow() {
-    if (!currentObjective) {
+    if (!currentObjective || !selectedImage) {
       return;
     }
 
@@ -85,6 +149,9 @@ export function CurrentObjectiveScreen({
   }
 
   useEffect(() => {
+    setCaptureError(null);
+    setMockValidationError(null);
+    setSelectedImage(null);
     void loadCurrentObjective();
   }, [objectiveSlug, routeSlug]);
 
@@ -170,22 +237,79 @@ export function CurrentObjectiveScreen({
         </View>
 
         <View style={styles.supportCard}>
+          <Text style={styles.supportTitle}>Objective image</Text>
+          <Text style={styles.supportBody}>
+            This is the first real native input for the gameplay loop. Capture a photo or choose
+            one from the device so the future validation pipeline has an image-ready step to build
+            on.
+          </Text>
+
+          {captureError ? <Text style={styles.errorText}>{captureError}</Text> : null}
+
+          {selectedImage ? (
+            <View style={styles.previewCard}>
+              <Image source={{ uri: selectedImage.uri }} style={styles.previewImage} />
+              <Text style={styles.previewTitle}>Image ready for validation</Text>
+              <Text style={styles.metaText}>
+                {selectedImage.fileName
+                  ? `File: ${selectedImage.fileName}`
+                  : 'No filename metadata is available for this image.'}
+              </Text>
+              <Text style={styles.metaText}>
+                {selectedImage.width && selectedImage.height
+                  ? `Dimensions: ${selectedImage.width} x ${selectedImage.height}`
+                  : 'Image dimensions were not provided by the device.'}
+              </Text>
+              <Text style={styles.metaText}>
+                {selectedImage.mimeType
+                  ? `Type: ${selectedImage.mimeType}`
+                  : 'The device did not report a mime type for this image.'}
+              </Text>
+              <PrimaryButton
+                disabled={isCapturing}
+                label={isCapturing ? 'Retaking Photo...' : 'Retake Photo'}
+                onPress={() => void handleCaptureImage()}
+              />
+              <PrimaryButton
+                disabled={isSelectingFromLibrary}
+                label={isSelectingFromLibrary ? 'Replacing from Library...' : 'Choose Different Image'}
+                onPress={() => void handleSelectImageFromLibrary()}
+              />
+              <PrimaryButton label="Remove Image" onPress={clearSelectedImage} />
+            </View>
+          ) : (
+            <View style={styles.actionStack}>
+              <PrimaryButton
+                disabled={isCapturing}
+                label={isCapturing ? 'Opening Camera...' : 'Open Camera'}
+                onPress={() => void handleCaptureImage()}
+              />
+              <PrimaryButton
+                disabled={isSelectingFromLibrary}
+                label={isSelectingFromLibrary ? 'Opening Library...' : 'Choose from Library'}
+                onPress={() => void handleSelectImageFromLibrary()}
+              />
+            </View>
+          )}
+        </View>
+
+        <View style={styles.supportCard}>
           <Text style={styles.supportTitle}>Mock validation flow</Text>
           <Text style={styles.supportBody}>
-            This temporary action stands in for the future GPS and camera validation pipeline. It
-            checks that the live reward can be resolved and then moves the user into the unlocked
-            story flow.
+            This temporary action now assumes an image is ready. It still does not judge the photo,
+            but it makes the future GPS and visual validation seam much more concrete.
           </Text>
           {mockValidationError ? (
             <Text style={styles.errorText}>{mockValidationError}</Text>
           ) : (
             <Text style={styles.metaText}>
-              No completion is persisted yet. This is an explicit temporary success transition for
-              the MVP slice.
+              {selectedImage
+                ? 'The selected image stays local to the device for now. No completion is persisted yet.'
+                : 'Capture or choose an image first to unlock the temporary mocked-success transition.'}
             </Text>
           )}
           <PrimaryButton
-            disabled={isMockValidating}
+            disabled={isMockValidating || !selectedImage}
             label={isMockValidating ? 'Validating Mock Success...' : 'Validate Objective (Mock)'}
             onPress={() => void runMockValidationFlow()}
           />
@@ -195,18 +319,9 @@ export function CurrentObjectiveScreen({
           <Text style={styles.supportTitle}>Progressive hints</Text>
           <Text style={styles.supportBody}>
             Hints are already seeded in D1 and exposed by the Worker API. The reveal interaction for
-            this screen is the next missing slice.
+            this screen is still the next missing slice.
           </Text>
           <PrimaryButton disabled label="Hints Coming Soon" onPress={() => undefined} />
-        </View>
-
-        <View style={styles.supportCard}>
-          <Text style={styles.supportTitle}>Camera validation</Text>
-          <Text style={styles.supportBody}>
-            Camera capture is intentionally not active yet. This slice prepares the gameplay screen
-            without pretending that validation, permissions, or photo analysis already exist.
-          </Text>
-          <PrimaryButton disabled label="Camera Coming Soon" onPress={() => undefined} />
         </View>
 
         <PrimaryButton label="Back to Route Detail" onPress={onBack} />
@@ -272,7 +387,7 @@ const styles = StyleSheet.create({
   },
   supportCard: {
     gap: 14,
-    padding: 20,
+    padding: 22,
     borderRadius: 24,
     backgroundColor: '#ffffff',
     borderWidth: 1,
@@ -286,17 +401,33 @@ const styles = StyleSheet.create({
   supportBody: {
     color: '#4f5663',
     fontSize: 15,
-    lineHeight: 23,
+    lineHeight: 22,
+  },
+  actionStack: {
+    gap: 12,
+  },
+  previewCard: {
+    gap: 12,
+  },
+  previewImage: {
+    width: '100%',
+    aspectRatio: 4 / 3,
+    borderRadius: 20,
+    backgroundColor: '#e8edf4',
+  },
+  previewTitle: {
+    color: '#1c1d21',
+    fontSize: 16,
+    fontWeight: '800',
   },
   metaText: {
-    color: '#7a6f61',
-    fontSize: 13,
-    lineHeight: 20,
-  },
-  errorText: {
-    color: '#a32626',
+    color: '#4f5663',
     fontSize: 14,
     lineHeight: 21,
-    fontWeight: '600',
+  },
+  errorText: {
+    color: '#9c2f28',
+    fontSize: 14,
+    lineHeight: 21,
   },
 });

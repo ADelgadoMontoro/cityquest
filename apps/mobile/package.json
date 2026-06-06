@@ -5,13 +5,13 @@
   "description": "CityQuest Expo mobile application.",
   "main": "index.ts",
   "scripts": {
-    "android": "expo start --android",
+    "android": "expo run:android",
     "build": "echo \"Mobile production builds will be added in a later task.\"",
     "clean": "echo \"Nothing to clean in apps/mobile yet.\"",
     "dev": "expo start",
     "format": "prettier --check . --ignore-unknown",
     "format:write": "prettier --write . --ignore-unknown",
-    "ios": "expo start --ios",
+    "ios": "expo run:ios",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
     "start": "expo start",
@@ -23,11 +23,14 @@
   },
   "dependencies": {
     "expo": "~56.0.5",
+    "expo-dev-client": "~56.0.19",
+    "expo-image-picker": "~56.0.16",
     "expo-status-bar": "~3.0.8",
-    "react": "19.2.0",
-    "react-native": "0.81.5"
+    "react": "19.2.3",
+    "react-native": "0.85.3",
+    "react-native-web": "^0.21.2"
   },
   "devDependencies": {
-    "@types/react": "~19.2.2"
+    "@types/react": "~19.2.15"
   }
 }

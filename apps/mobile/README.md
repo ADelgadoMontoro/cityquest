@@ -15,7 +15,7 @@ This bootstrap provides:
 - a minimal in-app navigation flow for the next mobile slice
 - a live destination selector backed by the Worker API
 - a live route detail screen backed by the Worker API
-- a live-backed current-objective screen prepared for the next gameplay slice
+- a live-backed current-objective screen with real image capture/selection for gameplay input
 - a live-backed unlocked-story screen fed by the Worker API
 - an initial folder structure for app growth
 - shared workspace scripts aligned with the monorepo
@@ -39,8 +39,9 @@ This flow is already aligned with the real backend slices implemented in `apps/a
 
 The destination selector, route detail screen, current-objective screen, and unlocked-story screen
 now all read the live Worker API. The current-objective view is still intentionally pre-gameplay:
-it shows the real objective context, runs a mocked-success transition into the reward flow, and
-keeps hints/camera as honest placeholders until later EVOs add those capabilities for real.
+it shows the real objective context, allows the user to capture or choose a photo on device, and
+then runs a mocked-success transition into the reward flow without pretending that visual
+validation already exists.
 
 ## Local API Configuration
 
@@ -62,6 +63,21 @@ The Worker must be running locally for the selector to load:
 ```bash
 npm run api:dev
 ```
+
+For a physical Android device using the development build, `adb reverse` is the simplest local
+bridge:
+
+```bash
+adb reverse tcp:8787 tcp:8787
+```
+
+That lets the app keep using:
+
+```txt
+http://127.0.0.1:8787
+```
+
+from the phone while still reaching the Worker on the development machine.
 
 ## Testing
 
