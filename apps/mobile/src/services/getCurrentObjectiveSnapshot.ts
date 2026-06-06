@@ -22,6 +22,8 @@ function deriveCurrentObjectiveSnapshot(
         routeTitle: routeDetail.route.title,
         destinationName: routeDetail.destination.name,
         poiName: poi.name,
+        poiLatitude: poi.latitude,
+        poiLongitude: poi.longitude,
         objective: matchedObjective,
       };
     }

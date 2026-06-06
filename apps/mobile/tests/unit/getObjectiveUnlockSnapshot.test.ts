@@ -41,6 +41,8 @@ describe('getObjectiveUnlockSnapshot', () => {
         title: 'Statue of Saint Ferdinand',
       },
       poiName: 'Cathedral of Jaén',
+      poiLatitude: 37.765738,
+      poiLongitude: -3.789518,
       routeSlug: 'jaen-echoes-of-stone',
       routeTitle: 'Jaén: Echoes of Stone',
     });
@@ -136,6 +138,8 @@ describe('getObjectiveUnlockSnapshot', () => {
         title: 'Statue of Saint Ferdinand',
       },
       poiName: 'Cathedral of Jaén',
+      poiLatitude: 37.765738,
+      poiLongitude: -3.789518,
       routeSlug: 'jaen-echoes-of-stone',
       routeTitle: 'Jaén: Echoes of Stone',
     });

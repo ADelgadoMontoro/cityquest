@@ -84,6 +84,8 @@ describe('getRouteDetail', () => {
           description: '',
           displayOrder: 0,
           indoorMode: true,
+          latitude: 37.765738,
+          longitude: -3.789518,
           name: 'Cathedral of Jaén',
           objectives: [
             {

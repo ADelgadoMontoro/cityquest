@@ -84,6 +84,8 @@ export async function getRouteDetail(routeSlug: string): Promise<MobileRouteDeta
       description: poi.description ?? '',
       indoorMode: poi.indoorMode === 1,
       displayOrder: poi.displayOrder,
+      latitude: poi.latitude,
+      longitude: poi.longitude,
       objectives: poi.objectives.map((objective) => ({
         slug: objective.slug,
         title: objective.title,

@@ -19,7 +19,11 @@ import {
   selectObjectiveImage,
 } from '@/services/objectiveImageCapture';
 import type { MobileObjectiveCaptureAsset } from '@/types/objectiveCapture';
+import type { MobileObjectiveGpsValidationResult } from '@/types/objectiveLocation';
+import { validateObjectiveGpsRadius } from '@/services/objectiveLocationValidation';
 import type { MobileCurrentObjectiveSnapshot } from '@/types/route';
+
+const GPS_VALIDATION_TTL_MS = 15_000;
 
 type CurrentObjectiveScreenProps = {
   objectiveSlug?: string;
@@ -45,6 +49,9 @@ export function CurrentObjectiveScreen({
   const [selectedImage, setSelectedImage] = useState<MobileObjectiveCaptureAsset | null>(null);
   const [isCapturing, setIsCapturing] = useState(false);
   const [isSelectingFromLibrary, setIsSelectingFromLibrary] = useState(false);
+  const [gpsError, setGpsError] = useState<string | null>(null);
+  const [gpsValidation, setGpsValidation] = useState<MobileObjectiveGpsValidationResult | null>(null);
+  const [isCheckingLocation, setIsCheckingLocation] = useState(false);
 
   async function loadCurrentObjective() {
     setErrorMessage(null);
@@ -114,6 +121,36 @@ export function CurrentObjectiveScreen({
     setSelectedImage(null);
   }
 
+  async function handleCheckLocation() {
+    if (!currentObjective) {
+      return;
+    }
+
+    setGpsError(null);
+    setIsCheckingLocation(true);
+
+    try {
+      const validation = await validateObjectiveGpsRadius(
+        {
+          latitude: currentObjective.poiLatitude,
+          longitude: currentObjective.poiLongitude,
+        },
+        currentObjective.objective.gpsRadiusMeters,
+      );
+
+      setGpsValidation(validation);
+    } catch (error) {
+      setGpsError(
+        error instanceof Error
+          ? error.message
+          : 'The app could not determine whether you are within the objective radius.',
+      );
+      setGpsValidation(null);
+    } finally {
+      setIsCheckingLocation(false);
+    }
+  }
+
   async function runMockValidationFlow() {
     if (!currentObjective || !selectedImage) {
       return;
@@ -123,6 +160,28 @@ export function CurrentObjectiveScreen({
     setIsMockValidating(true);
 
     try {
+      if (currentObjective.objective.gpsRadiusMeters !== null) {
+        const liveGpsValidation = await validateObjectiveGpsRadius(
+          {
+            latitude: currentObjective.poiLatitude,
+            longitude: currentObjective.poiLongitude,
+          },
+          currentObjective.objective.gpsRadiusMeters,
+        );
+
+        setGpsValidation(liveGpsValidation);
+
+        if (liveGpsValidation.status !== 'within_radius') {
+          setMockValidationError(
+            liveGpsValidation.status === 'outside_radius'
+              ? 'You need to be inside the configured GPS radius before this temporary validation bridge can continue.'
+              : 'Your location reading is not precise enough yet. Wait a moment and run the GPS check again before validating.',
+          );
+
+          return;
+        }
+      }
+
       const rewardSnapshot = await getObjectiveUnlockSnapshot(
         routeSlug,
         currentObjective.objective.slug,
@@ -150,10 +209,26 @@ export function CurrentObjectiveScreen({
 
   useEffect(() => {
     setCaptureError(null);
+    setGpsError(null);
+    setGpsValidation(null);
     setMockValidationError(null);
     setSelectedImage(null);
     void loadCurrentObjective();
   }, [objectiveSlug, routeSlug]);
+
+  useEffect(() => {
+    if (gpsValidation?.status !== 'within_radius') {
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      setGpsValidation((current) => (current?.status === 'within_radius' ? null : current));
+    }, GPS_VALIDATION_TTL_MS);
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [gpsValidation]);
 
   if (isLoading) {
     return (
@@ -203,6 +278,24 @@ export function CurrentObjectiveScreen({
     );
   }
 
+  const requiresGpsValidation = currentObjective.objective.gpsRadiusMeters !== null;
+  const canRunMockValidation =
+    selectedImage !== null &&
+    (!requiresGpsValidation || gpsValidation?.status === 'within_radius');
+
+  const gpsStatusText =
+    gpsValidation?.status === 'within_radius'
+      ? `You are inside the validation radius. Distance: ${Math.round(gpsValidation.distanceMeters)}m / ${gpsValidation.radiusMeters}m.`
+      : gpsValidation?.status === 'outside_radius'
+        ? `You are outside the validation radius. Distance: ${Math.round(gpsValidation.distanceMeters)}m / ${gpsValidation.radiusMeters}m.`
+        : gpsValidation?.status === 'accuracy_too_low'
+          ? `Your current location fix is too imprecise for this objective radius. Reported accuracy: ${Math.round(gpsValidation.coordinates.accuracyMeters ?? 0)}m / required radius: ${gpsValidation.radiusMeters}m.`
+        : gpsValidation?.status === 'radius_unavailable'
+          ? 'This objective does not currently expose a GPS radius, so geographic gating is unavailable for this slice.'
+          : requiresGpsValidation
+            ? 'Location has not been checked yet. Run the GPS check before using the temporary validation bridge.'
+            : 'No GPS radius is configured for this objective, so image capture remains the only active gate for now.';
+
   return (
     <ScreenContainer>
       <StatusBar style="dark" />
@@ -234,6 +327,40 @@ export function CurrentObjectiveScreen({
               ? `${currentObjective.objective.gpsRadiusMeters} meters`
               : 'not defined yet'}
           </Text>
+        </View>
+
+        <View style={styles.supportCard}>
+          <Text style={styles.supportTitle}>GPS validation</Text>
+          <Text style={styles.supportBody}>
+            This is the first real geographic gate for the gameplay flow. The app checks whether
+            you are close enough to the focus POI using the objective radius already delivered by
+            the live route payload.
+          </Text>
+
+          {gpsError ? <Text style={styles.errorText}>{gpsError}</Text> : null}
+          <Text
+            style={[
+              styles.metaText,
+              gpsValidation?.status === 'within_radius' && styles.successText,
+              (gpsValidation?.status === 'outside_radius' ||
+                gpsValidation?.status === 'accuracy_too_low') &&
+                styles.warningText,
+            ]}
+          >
+            {gpsStatusText}
+          </Text>
+
+          <PrimaryButton
+            disabled={isCheckingLocation || gpsValidation?.status === 'radius_unavailable'}
+            label={
+              gpsValidation?.status === 'radius_unavailable'
+                ? 'GPS Radius Not Configured'
+                : isCheckingLocation
+                  ? 'Checking Location...'
+                  : 'Check My Location'
+            }
+            onPress={() => void handleCheckLocation()}
+          />
         </View>
 
         <View style={styles.supportCard}>
@@ -296,20 +423,23 @@ export function CurrentObjectiveScreen({
         <View style={styles.supportCard}>
           <Text style={styles.supportTitle}>Mock validation flow</Text>
           <Text style={styles.supportBody}>
-            This temporary action now assumes an image is ready. It still does not judge the photo,
-            but it makes the future GPS and visual validation seam much more concrete.
+            This temporary action now assumes an image is ready and the user is geographically in
+            range when a radius exists. It still does not judge the photo, but it makes the future
+            GPS and visual validation seam much more concrete.
           </Text>
           {mockValidationError ? (
             <Text style={styles.errorText}>{mockValidationError}</Text>
           ) : (
             <Text style={styles.metaText}>
-              {selectedImage
-                ? 'The selected image stays local to the device for now. No completion is persisted yet.'
-                : 'Capture or choose an image first to unlock the temporary mocked-success transition.'}
+              {!selectedImage
+                ? 'Capture or choose an image first to unlock the temporary mocked-success transition.'
+                : requiresGpsValidation && gpsValidation?.status !== 'within_radius'
+                  ? 'Run the GPS check, get inside the configured radius, and make sure the location reading is precise enough before using the temporary validation bridge.'
+                  : 'The selected image stays local to the device for now. No completion is persisted yet.'}
             </Text>
           )}
           <PrimaryButton
-            disabled={isMockValidating || !selectedImage}
+            disabled={isMockValidating || !canRunMockValidation}
             label={isMockValidating ? 'Validating Mock Success...' : 'Validate Objective (Mock)'}
             onPress={() => void runMockValidationFlow()}
           />
@@ -424,6 +554,12 @@ const styles = StyleSheet.create({
     color: '#4f5663',
     fontSize: 14,
     lineHeight: 21,
+  },
+  successText: {
+    color: '#2e6a3f',
+  },
+  warningText: {
+    color: '#8c4d1f',
   },
   errorText: {
     color: '#9c2f28',

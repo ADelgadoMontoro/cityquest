@@ -19,6 +19,8 @@ function createRouteDetailFixture(): MobileRouteDetail {
         description: 'Second POI by order but listed first on purpose.',
         displayOrder: 1,
         indoorMode: true,
+        latitude: 37.7710822,
+        longitude: -3.7940612,
         name: 'Arab Baths of Jaén',
         objectives: [
           {
@@ -38,6 +40,8 @@ function createRouteDetailFixture(): MobileRouteDetail {
         description: 'First POI by order but listed second on purpose.',
         displayOrder: 0,
         indoorMode: true,
+        latitude: 37.765738,
+        longitude: -3.789518,
         name: 'Cathedral of Jaén',
         objectives: [
           {
@@ -93,6 +97,8 @@ describe('getCurrentObjectiveSnapshot', () => {
         title: 'Warm Room Central Pool',
       },
       poiName: 'Arab Baths of Jaén',
+      poiLatitude: 37.7710822,
+      poiLongitude: -3.7940612,
       routeSlug: 'jaen-echoes-of-stone',
       routeTitle: 'Jaén: Echoes of Stone',
     });
@@ -114,6 +120,8 @@ describe('getCurrentObjectiveSnapshot', () => {
         title: 'Statue of Saint Ferdinand',
       },
       poiName: 'Cathedral of Jaén',
+      poiLatitude: 37.765738,
+      poiLongitude: -3.789518,
       routeSlug: 'jaen-echoes-of-stone',
       routeTitle: 'Jaén: Echoes of Stone',
     });

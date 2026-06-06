@@ -143,7 +143,7 @@ export function RouteDetailScreen({
 
 const styles = StyleSheet.create({
   wrapper: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: 24,
     paddingVertical: 32,
     gap: 18,

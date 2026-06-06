@@ -19,6 +19,12 @@
           "microphonePermission": false,
           "photosPermission": "Allow CityQuest to access your photos so you can choose an objective image."
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow CityQuest to access your location so it can check whether you are close enough to the current objective."
+        }
       ]
     ],
     "assetBundlePatterns": [

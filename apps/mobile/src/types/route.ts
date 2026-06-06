@@ -26,6 +26,8 @@ export type MobilePoiDetail = {
   description: string;
   indoorMode: boolean;
   displayOrder: number;
+  latitude: number;
+  longitude: number;
   objectives: MobileObjectiveSummary[];
 };
 
@@ -48,6 +50,8 @@ export type MobileCurrentObjectiveSnapshot = {
   destinationName: string;
   objective: MobileObjectiveSummary;
   poiName: string;
+  poiLatitude: number;
+  poiLongitude: number;
   routeSlug: string;
   routeTitle: string;
 };
