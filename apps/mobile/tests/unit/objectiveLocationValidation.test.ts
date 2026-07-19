@@ -8,6 +8,7 @@ import {
 vi.mock('expo-location', () => ({
   Accuracy: {
     Balanced: 'balanced',
+    Highest: 'highest',
   },
   PermissionStatus: {
     DENIED: 'denied',
@@ -78,6 +79,35 @@ describe('objectiveLocationValidation', () => {
       validateObjectiveGpsRadius({ latitude: 37.77901, longitude: -3.78501 }, 20),
     ).resolves.toMatchObject({
       radiusMeters: 20,
+      status: 'within_radius',
+    });
+  });
+
+  it('accepts normal mobile GPS accuracy for a wide outdoor testing radius', async () => {
+    vi.mocked(Location.requestForegroundPermissionsAsync).mockResolvedValue({
+      canAskAgain: true,
+      expires: 'never',
+      granted: true,
+      status: Location.PermissionStatus.GRANTED,
+    });
+    vi.mocked(Location.getCurrentPositionAsync).mockResolvedValue({
+      coords: {
+        accuracy: 100,
+        altitude: null,
+        altitudeAccuracy: null,
+        heading: null,
+        latitude: 37.7608,
+        longitude: -3.7928,
+        speed: null,
+      },
+      mocked: false,
+      timestamp: 1,
+    });
+
+    await expect(
+      validateObjectiveGpsRadius({ latitude: 37.765738, longitude: -3.789518 }, 700),
+    ).resolves.toMatchObject({
+      radiusMeters: 700,
       status: 'within_radius',
     });
   });

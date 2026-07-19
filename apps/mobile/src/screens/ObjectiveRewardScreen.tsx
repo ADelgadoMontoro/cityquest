@@ -9,6 +9,7 @@ import { getObjectiveUnlockSnapshot } from '@/services/getObjectiveUnlockSnapsho
 import type { MobileObjectiveUnlockSnapshot } from '@/types/route';
 
 type ObjectiveRewardScreenProps = {
+  backLabel?: string;
   entryMode?: 'direct' | 'mockValidation';
   objectiveSlug?: string;
   onBack: () => void;
@@ -16,6 +17,7 @@ type ObjectiveRewardScreenProps = {
 };
 
 export function ObjectiveRewardScreen({
+  backLabel = 'Back to Objective',
   entryMode = 'direct',
   objectiveSlug,
   onBack,
@@ -73,7 +75,7 @@ export function ObjectiveRewardScreen({
           <Text style={styles.title}>Reward unavailable</Text>
           <Text style={styles.description}>{errorMessage}</Text>
           <PrimaryButton label="Retry" onPress={() => void loadUnlockSnapshot()} />
-          <PrimaryButton label="Back to Objective" onPress={onBack} />
+          <PrimaryButton label={backLabel} onPress={onBack} />
         </View>
       </ScreenContainer>
     );
@@ -89,7 +91,7 @@ export function ObjectiveRewardScreen({
           <Text style={styles.description}>
             This objective does not have published unlockable content in the live MVP dataset yet.
           </Text>
-          <PrimaryButton label="Back to Objective" onPress={onBack} />
+          <PrimaryButton label={backLabel} onPress={onBack} />
         </View>
       </ScreenContainer>
     );
@@ -141,7 +143,7 @@ export function ObjectiveRewardScreen({
           </View>
         )}
 
-        <PrimaryButton label="Back to Objective" onPress={onBack} />
+        <PrimaryButton label={backLabel} onPress={onBack} />
       </ScrollView>
     </ScreenContainer>
   );

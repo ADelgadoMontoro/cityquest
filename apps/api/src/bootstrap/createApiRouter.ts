@@ -3,9 +3,11 @@ import { applyCorsHeaders, createPreflightResponse } from '../http/cors';
 import { createHealthRouteHandler } from '../routes/createHealthRouteHandler';
 import { createGetObjectiveHintsRouteHandler } from '../routes/createGetObjectiveHintsRouteHandler';
 import { createGetRouteDetailRouteHandler } from '../routes/createGetRouteDetailRouteHandler';
+import { createGetRouteObjectiveProgressRouteHandler } from '../routes/createGetRouteObjectiveProgressRouteHandler';
 import { createGetObjectiveUnlocksRouteHandler } from '../routes/createGetObjectiveUnlocksRouteHandler';
 import { createInitializationRouteHandler } from '../routes/createInitializationRouteHandler';
 import { createListDestinationsRouteHandler } from '../routes/createListDestinationsRouteHandler';
+import { createRegisterObjectiveCompletionRouteHandler } from '../routes/createRegisterObjectiveCompletionRouteHandler';
 import type { ApiRouter, ApiRouteDefinition } from '../types/http';
 import type { ApiRuntimeConfig } from '../config/apiConfig';
 
@@ -58,6 +60,12 @@ export function createApiRouter({ config }: CreateApiRouterDependencies): ApiRou
     },
     {
       methods: {
+        GET: createGetRouteObjectiveProgressRouteHandler(),
+      },
+      pathname: '/routes/:routeSlug/objective-progress',
+    },
+    {
+      methods: {
         GET: createGetObjectiveUnlocksRouteHandler(),
       },
       pathname: '/objectives/:objectiveSlug/unlocks',
@@ -67,6 +75,12 @@ export function createApiRouter({ config }: CreateApiRouterDependencies): ApiRou
         GET: createGetObjectiveHintsRouteHandler(),
       },
       pathname: '/objectives/:objectiveSlug/hints',
+    },
+    {
+      methods: {
+        POST: createRegisterObjectiveCompletionRouteHandler(),
+      },
+      pathname: '/objectives/:objectiveSlug/completions',
     },
   ];
 

@@ -20,7 +20,9 @@ export type MobileObjectiveGpsValidationResult =
   | {
       status: 'accuracy_too_low';
       coordinates: MobileObjectiveLocationCoordinates;
+      distanceMeters: number;
       radiusMeters: number;
+      requiredAccuracyMeters: number;
     }
   | {
       status: 'radius_unavailable';

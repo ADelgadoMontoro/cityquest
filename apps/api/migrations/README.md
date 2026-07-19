@@ -16,6 +16,9 @@ This directory is reserved for future `Cloudflare D1` SQL migrations owned by th
 0007_seed_banos_arabes_poi_and_objectives.sql
 0008_seed_statue_of_saint_ferdinand_unlockable_content.sql
 0009_seed_statue_of_saint_ferdinand_hints.sql
+0010_create_objective_completions.sql
+0011_update_statue_of_saint_ferdinand_gps_radius.sql
+0012_update_all_objective_gps_radii_for_testing.sql
 ```
 
 ## Purpose
@@ -29,7 +32,7 @@ Recommended naming style:
 0002_create_routes_table.sql
 ```
 
-The current baseline migration deliberately covers only the first content slice:
+The current migration set deliberately covers only the first MVP slice:
 
 - `destinations`
 - `routes`
@@ -37,6 +40,7 @@ The current baseline migration deliberately covers only the first content slice:
 - `visual_objectives`
 - `hints`
 - `unlockable_contents`
+- `objective_completions`
 
 The first baseline content seed now introduces:
 
@@ -65,10 +69,19 @@ The next hints seed introduces:
 
 - three progressive hints for `Statue of Saint Ferdinand`
 
+The next persistence migration introduces:
+
+- MVP objective completion records for temporary actors
+
+The latest GPS calibration migration introduces:
+
+- a temporary `700m` radius for `Statue of Saint Ferdinand` to support real-device testing before the final outdoor-radius pass
+- a follow-up temporary `700m` radius for all published objectives so the MVP flow can be tested from a real phone before final radius calibration
+
 It intentionally defers:
 
 - users
-- progress
+- full route progress
 - achievements
 - analytics
 - demo-mode persistence

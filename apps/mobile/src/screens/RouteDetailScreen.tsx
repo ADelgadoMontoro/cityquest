@@ -10,13 +10,13 @@ import type { MobileRouteDetail } from '@/types/route';
 
 type RouteDetailScreenProps = {
   onBack: () => void;
-  onOpenCurrentObjective: (routeSlug: string, objectiveSlug?: string) => void;
+  onOpenPoiObjectives: (routeSlug: string, poiSlug: string) => void;
   routeSlug: string;
 };
 
 export function RouteDetailScreen({
   onBack,
-  onOpenCurrentObjective,
+  onOpenPoiObjectives,
   routeSlug,
 }: RouteDetailScreenProps): React.JSX.Element {
   const [routeDetail, setRouteDetail] = useState<MobileRouteDetail | null>(null);
@@ -95,8 +95,6 @@ export function RouteDetailScreen({
     );
   }
 
-  const firstObjective = routeDetail.pois[0]?.objectives[0];
-
   return (
     <ScreenContainer>
       <StatusBar style="dark" />
@@ -119,11 +117,6 @@ export function RouteDetailScreen({
           <Text style={styles.summaryBody}>Experience mode: live route preview</Text>
         </View>
 
-        <PrimaryButton
-          label="Open Current Objective"
-          onPress={() => onOpenCurrentObjective(routeSlug, firstObjective?.slug)}
-        />
-
         {routeDetail.pois.map((poi) => (
           <View key={poi.slug} style={styles.poiCard}>
             <Text style={styles.poiTitle}>{poi.name}</Text>
@@ -132,6 +125,10 @@ export function RouteDetailScreen({
               {poi.indoorMode ? 'Indoor-focused POI' : 'Outdoor-focused POI'}
             </Text>
             <Text style={styles.poiMeta}>Objectives: {poi.objectives.length}</Text>
+            <PrimaryButton
+              label="View Objectives"
+              onPress={() => onOpenPoiObjectives(routeSlug, poi.slug)}
+            />
           </View>
         ))}
 

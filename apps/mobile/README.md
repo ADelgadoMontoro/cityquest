@@ -15,7 +15,9 @@ This bootstrap provides:
 - a minimal in-app navigation flow for the next mobile slice
 - a live destination selector backed by the Worker API
 - a live route detail screen backed by the Worker API
+- a POI objectives screen that shows completed, current, and locked objective states
 - a live-backed current-objective screen with real image capture/selection, basic GPS checking, and mock visual validation
+- MVP objective completion persistence through the Worker API
 - a live-backed unlocked-story screen fed by the Worker API
 - an initial folder structure for app growth
 - shared workspace scripts aligned with the monorepo
@@ -28,21 +30,24 @@ framework yet:
 1. `welcome`
 2. `destinations`
 3. `routeDetail`
-4. `currentObjective`
-5. `objectiveReward`
+4. `poiObjectives`
+5. `currentObjective`
+6. `objectiveReward`
 
 This flow is already aligned with the real backend slices implemented in `apps/api`:
 
 - `GET /destinations`
 - `GET /routes/jaen-echoes-of-stone`
+- `GET /routes/jaen-echoes-of-stone/objective-progress?actorId=cityquest-local-demo-actor`
 - `GET /objectives/estatua-san-fernando/unlocks`
+- `POST /objectives/estatua-san-fernando/completions`
 
-The destination selector, route detail screen, current-objective screen, and unlocked-story screen
-now all read the live Worker API. The current-objective view is still intentionally pre-gameplay:
-it shows the real objective context, allows the user to capture or choose a photo on device,
-checks whether the player is inside the configured GPS radius, runs a local mock visual check, and
-then transitions into the reward flow without pretending that real image recognition already
-exists.
+The destination selector, route detail screen, POI objectives screen, current-objective screen, and
+unlocked-story screen now all read the live Worker API. The current-objective view is still
+intentionally pre-gameplay: it shows the real objective context, allows the user to capture or
+choose a photo on device, checks whether the player is inside the configured GPS radius, runs a
+local mock visual check, and then saves an MVP completion before transitioning into the reward
+flow, without pretending that real image recognition or authenticated progress already exists.
 
 ## Local API Configuration
 
@@ -105,8 +110,10 @@ npm run test:integration --workspace @cityquest/mobile
 Current emphasis:
 
 - Worker payload mapping into mobile models
+- route objective progress and POI objective-list derivation
 - current objective derivation
 - unlocked content delivery flow
+- MVP objective completion registration
 - native image, GPS, and mock visual validation service behavior
 - edge cases such as `404` handling and safe defaults
 

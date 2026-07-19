@@ -13,6 +13,14 @@ export type RouteDetailRoute = {
   };
 };
 
+export type PoiObjectivesRoute = {
+  name: 'poiObjectives';
+  params: {
+    poiSlug: string;
+    routeSlug: string;
+  };
+};
+
 export type CurrentObjectiveRoute = {
   name: 'currentObjective';
   params: {
@@ -24,6 +32,7 @@ export type CurrentObjectiveRoute = {
 export type ObjectiveRewardRoute = {
   name: 'objectiveReward';
   params: {
+    backLabel?: string;
     entryMode?: 'direct' | 'mockValidation';
     objectiveSlug?: string;
     routeSlug: string;
@@ -34,6 +43,7 @@ export type AppRoute =
   | WelcomeRoute
   | DestinationsRoute
   | RouteDetailRoute
+  | PoiObjectivesRoute
   | CurrentObjectiveRoute
   | ObjectiveRewardRoute;
 

@@ -56,10 +56,10 @@ These percentages are approximate engineering snapshots, not formal project acco
 | Area | Progress | Notes |
 | --- | --- | --- |
 | Platform / Infra | `[########--] 82%` | Cloudflare direction, Worker runtime, D1 binding, migrations, verification flow, and local git quality gates are in place. |
-| API / Data | `[#########-] 85%` | Healthcheck, HTTP foundation, schema, seeds, public content endpoints, hints, unlock delivery, and contract/edge coverage are in place. |
-| Mobile | `[######----] 65%` | Expo navigation is in place and the MVP flow already consumes live destinations, route detail, current objective, mocked-success reward flow, and unlocked content. |
+| API / Data | `[#########-] 88%` | Healthcheck, HTTP foundation, schema, seeds, public content endpoints, hints, unlock delivery, completion persistence, route objective progress, and contract/edge coverage are in place. |
+| Mobile | `[#######---] 72%` | Expo navigation is in place and the MVP flow consumes live destinations, route detail, POI objective progress, current objective, GPS plus mocked visual validation, completion registration, and unlocked content. |
 | Admin | `[##--------] 20%` | Next.js foundation exists, but real content management flows are still pending. |
-| Overall MVP | `[#######---] 72%` | Foundations, real seeded content, public endpoints, hints, reward delivery, mocked-success gameplay flow, and first automated quality gates are in place. |
+| Overall MVP | `[########--] 76%` | Foundations, real seeded content, public endpoints, hints, reward delivery, GPS plus mocked visual gameplay flow, persisted completions, POI progress, and first automated quality gates are in place. |
 
 ## Start Here
 

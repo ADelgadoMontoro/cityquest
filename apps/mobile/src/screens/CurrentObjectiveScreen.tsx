@@ -19,6 +19,7 @@ import {
   selectObjectiveImage,
 } from '@/services/objectiveImageCapture';
 import { validateObjectiveImageMock } from '@/services/objectiveVisualValidation';
+import { registerObjectiveCompletion } from '@/services/registerObjectiveCompletion';
 import type { MobileObjectiveCaptureAsset } from '@/types/objectiveCapture';
 import type { MobileObjectiveGpsValidationResult } from '@/types/objectiveLocation';
 import type { MobileObjectiveVisualValidationResult } from '@/types/objectiveVisualValidation';
@@ -204,6 +205,19 @@ export function CurrentObjectiveScreen({
         }
       }
 
+      const completionGpsStatus =
+        currentObjective.objective.gpsRadiusMeters === null
+          ? 'radius_unavailable'
+          : 'within_radius';
+
+      await registerObjectiveCompletion({
+        gpsStatus: completionGpsStatus,
+        objectiveSlug: currentObjective.objective.slug,
+        routeSlug,
+        validationMode: 'mock_visual',
+        visualStatus: 'passed',
+      });
+
       const rewardSnapshot = await getObjectiveUnlockSnapshot(
         routeSlug,
         currentObjective.objective.slug,
@@ -308,18 +322,34 @@ export function CurrentObjectiveScreen({
     hasPassedVisualValidation &&
     (!requiresGpsValidation || gpsValidation?.status === 'within_radius');
 
-  const gpsStatusText =
-    gpsValidation?.status === 'within_radius'
-      ? `You are inside the validation radius. Distance: ${Math.round(gpsValidation.distanceMeters)}m / ${gpsValidation.radiusMeters}m.`
-      : gpsValidation?.status === 'outside_radius'
-        ? `You are outside the validation radius. Distance: ${Math.round(gpsValidation.distanceMeters)}m / ${gpsValidation.radiusMeters}m.`
-        : gpsValidation?.status === 'accuracy_too_low'
-          ? `Your current location fix is too imprecise for this objective radius. Reported accuracy: ${Math.round(gpsValidation.coordinates.accuracyMeters ?? 0)}m / required radius: ${gpsValidation.radiusMeters}m.`
-        : gpsValidation?.status === 'radius_unavailable'
-          ? 'This objective does not currently expose a GPS radius, so geographic gating is unavailable for this slice.'
-          : requiresGpsValidation
-            ? 'Location has not been checked yet. Run the GPS check before using the temporary validation bridge.'
-            : 'No GPS radius is configured for this objective, so image capture remains the only active gate for now.';
+  let gpsStatusText =
+    'No GPS radius is configured for this objective, so image capture remains the only active gate for now.';
+
+  if (requiresGpsValidation) {
+    gpsStatusText =
+      'Location has not been checked yet. Run the GPS check before using the temporary validation bridge.';
+  }
+
+  if (gpsValidation?.status === 'radius_unavailable') {
+    gpsStatusText =
+      'This objective does not currently expose a GPS radius, so geographic gating is unavailable for this slice.';
+  }
+
+  if (gpsValidation?.status === 'accuracy_too_low') {
+    gpsStatusText = [
+      'Your current location fix is too imprecise for this objective radius.',
+      `Distance: ${Math.round(gpsValidation.distanceMeters)}m / ${gpsValidation.radiusMeters}m.`,
+      `Reported accuracy: ${Math.round(gpsValidation.coordinates.accuracyMeters ?? 0)}m / accepted accuracy: ${gpsValidation.requiredAccuracyMeters}m.`,
+    ].join(' ');
+  }
+
+  if (gpsValidation?.status === 'outside_radius') {
+    gpsStatusText = `You are outside the validation radius. Distance: ${Math.round(gpsValidation.distanceMeters)}m / ${gpsValidation.radiusMeters}m.`;
+  }
+
+  if (gpsValidation?.status === 'within_radius') {
+    gpsStatusText = `You are inside the validation radius. Distance: ${Math.round(gpsValidation.distanceMeters)}m / ${gpsValidation.radiusMeters}m.`;
+  }
 
   return (
     <ScreenContainer>
@@ -498,7 +528,7 @@ export function CurrentObjectiveScreen({
                   ? 'Run the visual mock before opening the temporary reward flow.'
                 : requiresGpsValidation && gpsValidation?.status !== 'within_radius'
                   ? 'Run the GPS check, get inside the configured radius, and make sure the location reading is precise enough before using the temporary validation bridge.'
-                  : 'The selected image stays local to the device for now. No completion is persisted yet.'}
+                  : 'The selected image stays local to the device, and the MVP completion is saved before opening the reward.'}
             </Text>
           )}
           <PrimaryButton

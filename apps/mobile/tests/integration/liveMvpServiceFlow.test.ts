@@ -3,6 +3,10 @@ import { describe, expect, it, vi } from 'vitest';
 import { getCurrentObjectiveSnapshot } from '@/services/getCurrentObjectiveSnapshot';
 import { getObjectiveUnlockSnapshot } from '@/services/getObjectiveUnlockSnapshot';
 import { listDestinationSelectorItems } from '@/services/listDestinationSelectorItems';
+import {
+  MVP_DEMO_ACTOR_ID,
+  registerObjectiveCompletion,
+} from '@/services/registerObjectiveCompletion';
 
 function createJsonResponse(payload: unknown, status = 200): Response {
   return new Response(JSON.stringify(payload), {
@@ -74,7 +78,7 @@ describe('live MVP mobile service flow', () => {
                         'Find the statue of Saint Ferdinand, the Christian king linked to the conquest of Jaén and one of the key historical figures behind the city’s medieval memory.',
                       difficulty: 'easy',
                       displayOrder: 0,
-                      gpsRadiusMeters: 20,
+                      gpsRadiusMeters: 700,
                       id: 'objective-catedral-de-jaen-estatua-san-fernando',
                       indoorMode: 0,
                       slug: 'estatua-san-fernando',
@@ -90,6 +94,25 @@ describe('live MVP mobile service flow', () => {
               slug: 'jaen-echoes-of-stone',
               status: 'published',
               title: 'Jaén: Echoes of Stone',
+            },
+          },
+          meta: {},
+          success: true,
+        });
+      }
+
+      if (url.endsWith('/objectives/estatua-san-fernando/completions')) {
+        return createJsonResponse({
+          data: {
+            completion: {
+              actorId: MVP_DEMO_ACTOR_ID,
+              completedAt: '2026-07-19T12:00:00.000Z',
+              gpsStatus: 'within_radius',
+              id: 'completion-estatua-san-fernando-dcfcf308',
+              objectiveSlug: 'estatua-san-fernando',
+              routeSlug: 'jaen-echoes-of-stone',
+              validationMode: 'mock_visual',
+              visualStatus: 'passed',
             },
           },
           meta: {},
@@ -142,10 +165,21 @@ describe('live MVP mobile service flow', () => {
 
     expect(objectiveSlug).toBe('estatua-san-fernando');
 
+    const completion = await registerObjectiveCompletion({
+      gpsStatus: 'within_radius',
+      objectiveSlug: objectiveSlug ?? '',
+      routeSlug: routeSlug ?? '',
+      validationMode: 'mock_visual',
+      visualStatus: 'passed',
+    });
+
+    expect(completion.objectiveSlug).toBe('estatua-san-fernando');
+    expect(completion.routeSlug).toBe('jaen-echoes-of-stone');
+
     const reward = await getObjectiveUnlockSnapshot(routeSlug ?? '', objectiveSlug);
 
     expect(reward?.unlockableContents[0]?.title).toBe('The King Who Changed Jaén');
     expect(reward?.poiName).toBe('Cathedral of Jaén');
-    expect(fetchMock).toHaveBeenCalledTimes(4);
+    expect(fetchMock).toHaveBeenCalledTimes(5);
   });
 });

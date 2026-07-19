@@ -14,8 +14,10 @@ The current bootstrap intentionally includes:
 - a centralized HTTP routing and transport foundation for future API endpoints
 - a public `GET /destinations` endpoint backed by D1
 - a public `GET /routes/jaen-echoes-of-stone` endpoint backed by D1
+- a public `GET /routes/jaen-echoes-of-stone/objective-progress?actorId=...` endpoint backed by D1
 - a public `GET /objectives/estatua-san-fernando/hints` endpoint backed by D1
 - a public `GET /objectives/estatua-san-fernando/unlocks` endpoint backed by D1
+- a public `POST /objectives/estatua-san-fernando/completions` endpoint backed by D1
 - local development through `Wrangler`
 - build-time Worker runtime verification through a local Wrangler smoke check
 - unit and integration test wiring for backend evolution
@@ -23,7 +25,7 @@ The current bootstrap intentionally includes:
 It intentionally does not include:
 
 - real validation workflows
-- progress persistence
+- full route progress persistence
 - Cloudflare R2 integrations
 - Cloudflare KV integrations
 - authentication
@@ -99,6 +101,12 @@ To validate the current real route detail payload:
 curl http://localhost:8787/routes/jaen-echoes-of-stone
 ```
 
+To validate the first MVP objective-progress payload:
+
+```bash
+curl "http://localhost:8787/routes/jaen-echoes-of-stone/objective-progress?actorId=cityquest-local-demo-actor"
+```
+
 To validate the first progressive hints payload:
 
 ```bash
@@ -109,6 +117,14 @@ To validate the first unlockable-content payload:
 
 ```bash
 curl http://localhost:8787/objectives/estatua-san-fernando/unlocks
+```
+
+To validate the first MVP objective completion write:
+
+```bash
+curl -X POST http://localhost:8787/objectives/estatua-san-fernando/completions \
+  -H "content-type: application/json" \
+  -d '{"actorId":"cityquest-local-demo-actor","routeSlug":"jaen-echoes-of-stone","validationMode":"mock_visual","gpsStatus":"within_radius","visualStatus":"passed"}'
 ```
 
 ## D1 Preparation
@@ -160,18 +176,28 @@ The first baseline content seed is [`0003_seed_jaen_and_route.sql`](./migrations
 
 [`0009_seed_statue_of_saint_ferdinand_hints.sql`](./migrations/0009_seed_statue_of_saint_ferdinand_hints.sql) introduces the first three progressive hints for the same objective, making the gameplay-help layer real in D1 and ready for the dedicated hint-delivery endpoint.
 
+[`0010_create_objective_completions.sql`](./migrations/0010_create_objective_completions.sql) introduces the first MVP completion persistence table for temporary actors after the mock validation flow succeeds.
+
+[`0011_update_statue_of_saint_ferdinand_gps_radius.sql`](./migrations/0011_update_statue_of_saint_ferdinand_gps_radius.sql) temporarily relaxes the first objective radius to `700m` for real-device testing before the GPS calibration follow-up.
+
+[`0012_update_all_objective_gps_radii_for_testing.sql`](./migrations/0012_update_all_objective_gps_radii_for_testing.sql) temporarily relaxes all published objective radii to `700m` so the MVP objective list can be tested end-to-end from a real phone before final GPS tuning.
+
 The first public read endpoints now sit on top of that seeded baseline:
 
 - `GET /destinations`
 - `GET /routes/jaen-echoes-of-stone`
+- `GET /routes/jaen-echoes-of-stone/objective-progress?actorId=cityquest-local-demo-actor`
 - `GET /objectives/estatua-san-fernando/hints`
 - `GET /objectives/estatua-san-fernando/unlocks`
+- `POST /objectives/estatua-san-fernando/completions`
 
 Important nuance:
 
 - this unlock endpoint does not claim to perform real validation yet
 - it is the first backend-owned reward delivery path, ready for later gameplay slices to call after mocked or real validation succeeds
 - hints now exist in D1 and are exposed through a dedicated objective-level API contract
+- completion persistence records the current MVP validation mode for a temporary actor, but it is not yet authenticated or server-authoritative gameplay validation
+- objective progress derives `completed`, `current`, and `locked` states from published route ordering plus MVP temporary-actor completions
 
 ## Naming and Platform Notes
 

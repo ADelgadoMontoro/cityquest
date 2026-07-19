@@ -188,7 +188,7 @@ describe('workerEntrypoint integration', () => {
                 'Find the statue of Saint Ferdinand, the Christian king linked to the conquest of Jaén and one of the key historical figures behind the city’s medieval memory.',
               difficulty: 'easy',
               display_order: 0,
-              gps_radius_meters: 20,
+              gps_radius_meters: 700,
               id: 'objective-catedral-de-jaen-estatua-san-fernando',
               indoor_mode: 0,
               poi_id: 'poi-catedral-de-jaen',
@@ -239,7 +239,7 @@ describe('workerEntrypoint integration', () => {
                     'Find the statue of Saint Ferdinand, the Christian king linked to the conquest of Jaén and one of the key historical figures behind the city’s medieval memory.',
                   difficulty: 'easy',
                   displayOrder: 0,
-                  gpsRadiusMeters: 20,
+                  gpsRadiusMeters: 700,
                   id: 'objective-catedral-de-jaen-estatua-san-fernando',
                   indoorMode: 0,
                   slug: 'estatua-san-fernando',
@@ -259,6 +259,139 @@ describe('workerEntrypoint integration', () => {
       },
       meta: {},
       success: true,
+    });
+  });
+
+  it('returns route objective progress for a temporary actor', async () => {
+    const response = await workerEntrypoint.fetch(
+      new Request(
+        'http://localhost/routes/jaen-echoes-of-stone/objective-progress?actorId=cityquest-local-demo-actor',
+      ),
+      createEnv({
+        DB: createDatabaseStubWithPreparedResults([
+          [
+            {
+              id: 'route-jaen-echoes-of-stone',
+              slug: 'jaen-echoes-of-stone',
+              title: 'Jaén: Echoes of Stone',
+            },
+          ],
+          [
+            {
+              completed_at: '2026-07-19T17:21:41.608Z',
+              objective_slug: 'estatua-san-fernando',
+              poi_slug: 'catedral-de-jaen',
+            },
+            {
+              completed_at: null,
+              objective_slug: 'mona-catedral-jaen',
+              poi_slug: 'catedral-de-jaen',
+            },
+            {
+              completed_at: null,
+              objective_slug: 'placa-santa-catalina-coro',
+              poi_slug: 'catedral-de-jaen',
+            },
+            {
+              completed_at: null,
+              objective_slug: 'fachada-palacio-villardompardo',
+              poi_slug: 'banos-arabes-jaen',
+            },
+            {
+              completed_at: null,
+              objective_slug: 'pinturas-recibidor-banos-arabes',
+              poi_slug: 'banos-arabes-jaen',
+            },
+          ],
+        ]),
+      }),
+      createExecutionContext(),
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toBe('application/json; charset=utf-8');
+    expect(response.headers.get('access-control-allow-origin')).toBe('*');
+
+    await expect(response.json()).resolves.toEqual({
+      data: {
+        actorId: 'cityquest-local-demo-actor',
+        objectives: [
+          {
+            completedAt: '2026-07-19T17:21:41.608Z',
+            objectiveSlug: 'estatua-san-fernando',
+            poiSlug: 'catedral-de-jaen',
+            status: 'completed',
+          },
+          {
+            completedAt: null,
+            objectiveSlug: 'mona-catedral-jaen',
+            poiSlug: 'catedral-de-jaen',
+            status: 'current',
+          },
+          {
+            completedAt: null,
+            objectiveSlug: 'placa-santa-catalina-coro',
+            poiSlug: 'catedral-de-jaen',
+            status: 'locked',
+          },
+          {
+            completedAt: null,
+            objectiveSlug: 'fachada-palacio-villardompardo',
+            poiSlug: 'banos-arabes-jaen',
+            status: 'current',
+          },
+          {
+            completedAt: null,
+            objectiveSlug: 'pinturas-recibidor-banos-arabes',
+            poiSlug: 'banos-arabes-jaen',
+            status: 'locked',
+          },
+        ],
+        route: {
+          slug: 'jaen-echoes-of-stone',
+          title: 'Jaén: Echoes of Stone',
+        },
+      },
+      meta: {},
+      success: true,
+    });
+  });
+
+  it('rejects objective progress requests without an actor id', async () => {
+    const response = await workerEntrypoint.fetch(
+      new Request('http://localhost/routes/jaen-echoes-of-stone/objective-progress'),
+      createEnv(),
+      createExecutionContext(),
+    );
+
+    expect(response.status).toBe(400);
+    expect(response.headers.get('access-control-allow-origin')).toBe('*');
+    await expect(response.json()).resolves.toEqual({
+      error: {
+        code: 'BAD_REQUEST',
+        message: 'actorId query parameter is required.',
+      },
+      success: false,
+    });
+  });
+
+  it('returns not-found for objective progress on an unknown route', async () => {
+    const response = await workerEntrypoint.fetch(
+      new Request('http://localhost/routes/unknown-route/objective-progress?actorId=demo'),
+      createEnv({
+        DB: createDatabaseStubWithPreparedResults([[]]),
+      }),
+      createExecutionContext(),
+    );
+
+    expect(response.status).toBe(404);
+    expect(response.headers.get('access-control-allow-origin')).toBe('*');
+    await expect(response.json()).resolves.toEqual({
+      error: {
+        code: 'NOT_FOUND',
+        message: 'Route not found.',
+      },
+      success: false,
     });
   });
 
@@ -403,6 +536,131 @@ describe('workerEntrypoint integration', () => {
         count: 3,
       },
       success: true,
+    });
+  });
+
+  it('registers an objective completion for the MVP validation flow', async () => {
+    const response = await workerEntrypoint.fetch(
+      new Request('http://localhost/objectives/estatua-san-fernando/completions', {
+        body: JSON.stringify({
+          actorId: 'cityquest-local-demo-actor',
+          gpsStatus: 'within_radius',
+          routeSlug: 'jaen-echoes-of-stone',
+          validationMode: 'mock_visual',
+          visualStatus: 'passed',
+        }),
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+      }),
+      createEnv({
+        DB: createDatabaseStubWithPreparedResults([
+          [
+            {
+              objective_id: 'objective-catedral-de-jaen-estatua-san-fernando',
+              route_id: 'route-jaen-echoes-of-stone',
+            },
+          ],
+          [],
+          [
+            {
+              actor_id: 'cityquest-local-demo-actor',
+              completed_at: '2026-07-19T12:00:00.000Z',
+              gps_status: 'within_radius',
+              id: 'completion-estatua-san-fernando-dcfcf308',
+              objective_slug: 'estatua-san-fernando',
+              route_slug: 'jaen-echoes-of-stone',
+              validation_mode: 'mock_visual',
+              visual_status: 'passed',
+            },
+          ],
+        ]),
+      }),
+      createExecutionContext(),
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toBe('application/json; charset=utf-8');
+    expect(response.headers.get('access-control-allow-origin')).toBe('*');
+
+    await expect(response.json()).resolves.toEqual({
+      data: {
+        completion: {
+          actorId: 'cityquest-local-demo-actor',
+          completedAt: '2026-07-19T12:00:00.000Z',
+          gpsStatus: 'within_radius',
+          id: 'completion-estatua-san-fernando-dcfcf308',
+          objectiveSlug: 'estatua-san-fernando',
+          routeSlug: 'jaen-echoes-of-stone',
+          validationMode: 'mock_visual',
+          visualStatus: 'passed',
+        },
+      },
+      meta: {},
+      success: true,
+    });
+  });
+
+  it('rejects malformed objective completion payloads', async () => {
+    const response = await workerEntrypoint.fetch(
+      new Request('http://localhost/objectives/estatua-san-fernando/completions', {
+        body: JSON.stringify({
+          actorId: '',
+          gpsStatus: 'outside_radius',
+          routeSlug: 'jaen-echoes-of-stone',
+          validationMode: 'mock_visual',
+          visualStatus: 'passed',
+        }),
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+      }),
+      createEnv(),
+      createExecutionContext(),
+    );
+
+    expect(response.status).toBe(400);
+    expect(response.headers.get('access-control-allow-origin')).toBe('*');
+    await expect(response.json()).resolves.toEqual({
+      error: {
+        code: 'BAD_REQUEST',
+        message: 'actorId is required.',
+      },
+      success: false,
+    });
+  });
+
+  it('returns not-found when registering completion for an unknown objective or route', async () => {
+    const response = await workerEntrypoint.fetch(
+      new Request('http://localhost/objectives/unknown-objective/completions', {
+        body: JSON.stringify({
+          actorId: 'cityquest-local-demo-actor',
+          gpsStatus: 'within_radius',
+          routeSlug: 'jaen-echoes-of-stone',
+          validationMode: 'mock_visual',
+          visualStatus: 'passed',
+        }),
+        headers: {
+          'content-type': 'application/json',
+        },
+        method: 'POST',
+      }),
+      createEnv({
+        DB: createDatabaseStubWithPreparedResults([[]]),
+      }),
+      createExecutionContext(),
+    );
+
+    expect(response.status).toBe(404);
+    expect(response.headers.get('access-control-allow-origin')).toBe('*');
+    await expect(response.json()).resolves.toEqual({
+      error: {
+        code: 'NOT_FOUND',
+        message: 'Route not found.',
+      },
+      success: false,
     });
   });
 

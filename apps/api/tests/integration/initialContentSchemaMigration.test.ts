@@ -43,6 +43,18 @@ const statueOfSaintFerdinandHintsMigrationFilePath = resolve(
   migrationsDirectoryPath,
   '0009_seed_statue_of_saint_ferdinand_hints.sql',
 );
+const objectiveCompletionsMigrationFilePath = resolve(
+  migrationsDirectoryPath,
+  '0010_create_objective_completions.sql',
+);
+const statueOfSaintFerdinandGpsRadiusMigrationFilePath = resolve(
+  migrationsDirectoryPath,
+  '0011_update_statue_of_saint_ferdinand_gps_radius.sql',
+);
+const allObjectiveGpsRadiiMigrationFilePath = resolve(
+  migrationsDirectoryPath,
+  '0012_update_all_objective_gps_radii_for_testing.sql',
+);
 
 function readMigrationFile(filePath: string) {
   return readFileSync(filePath, 'utf-8');
@@ -76,6 +88,9 @@ describe('initial content schema migration', () => {
     expect(existsSync(banosArabesSeedMigrationFilePath)).toBe(true);
     expect(existsSync(statueOfSaintFerdinandUnlockableContentMigrationFilePath)).toBe(true);
     expect(existsSync(statueOfSaintFerdinandHintsMigrationFilePath)).toBe(true);
+    expect(existsSync(objectiveCompletionsMigrationFilePath)).toBe(true);
+    expect(existsSync(statueOfSaintFerdinandGpsRadiusMigrationFilePath)).toBe(true);
+    expect(existsSync(allObjectiveGpsRadiiMigrationFilePath)).toBe(true);
   });
 
   it('defines the core MVP content tables', () => {
@@ -217,6 +232,36 @@ describe('initial content schema migration', () => {
     expect(migration).toContain("'hint-estatua-san-fernando-level-3'");
   });
 
+  it('defines a dedicated objective completions persistence migration', () => {
+    const migration = readMigrationFile(objectiveCompletionsMigrationFilePath);
+
+    expect(migration).toContain('CREATE TABLE IF NOT EXISTS objective_completions');
+    expect(migration).toContain('UNIQUE (actor_id, objective_id)');
+    expect(migration).toContain('FOREIGN KEY (route_id) REFERENCES routes(id) ON DELETE CASCADE');
+    expect(migration).toContain(
+      'FOREIGN KEY (objective_id) REFERENCES visual_objectives(id) ON DELETE CASCADE',
+    );
+    expect(migration).toContain('idx_objective_completions_actor_completed_at');
+    expect(migration).toContain('idx_objective_completions_route_actor');
+  });
+
+  it('defines a dedicated GPS-radius update migration for Statue of Saint Ferdinand testing', () => {
+    const migration = readMigrationFile(statueOfSaintFerdinandGpsRadiusMigrationFilePath);
+
+    expect(migration).toContain('UPDATE visual_objectives');
+    expect(migration).toContain('gps_radius_meters = 700');
+    expect(migration).toContain("'objective-catedral-de-jaen-estatua-san-fernando'");
+  });
+
+  it('defines a temporary GPS-radius update migration for all published objectives', () => {
+    const migration = readMigrationFile(allObjectiveGpsRadiiMigrationFilePath);
+
+    expect(migration).toContain('UPDATE visual_objectives');
+    expect(migration).toContain('gps_radius_meters = 700');
+    expect(migration).toContain("WHERE status = 'published'");
+    expect(migration).toContain('gps_radius_meters IS NOT NULL');
+  });
+
   it('executes the migration set successfully in SQLite', () => {
     const database = createSchemaSnapshot();
 
@@ -231,6 +276,7 @@ describe('initial content schema migration', () => {
     expect(tables.map((table) => table.name)).toEqual([
       'destinations',
       'hints',
+      'objective_completions',
       'pois',
       'routes',
       'unlockable_contents',
@@ -241,6 +287,9 @@ describe('initial content schema migration', () => {
       expect.arrayContaining([
         'idx_destinations_status_display_order',
         'idx_hints_objective_level',
+        'idx_objective_completions_actor_completed_at',
+        'idx_objective_completions_objective',
+        'idx_objective_completions_route_actor',
         'idx_pois_route_display_order',
         'idx_pois_route_display_order_unique',
         'idx_routes_destination_display_order_unique',
@@ -250,6 +299,65 @@ describe('initial content schema migration', () => {
         'idx_visual_objectives_poi_order',
       ]),
     );
+
+    database.close();
+  });
+
+  it('keeps objective completions idempotent per actor and objective', () => {
+    const database = createSchemaSnapshot();
+
+    database.exec(`
+      INSERT OR IGNORE INTO objective_completions (
+        id,
+        actor_id,
+        route_id,
+        objective_id,
+        validation_mode,
+        gps_status,
+        visual_status,
+        completed_at,
+        created_at,
+        updated_at
+      )
+      VALUES
+        (
+          'completion-one',
+          'cityquest-local-demo-actor',
+          'route-jaen-echoes-of-stone',
+          'objective-catedral-de-jaen-estatua-san-fernando',
+          'mock_visual',
+          'within_radius',
+          'passed',
+          '2026-07-19T12:00:00.000Z',
+          '2026-07-19T12:00:00.000Z',
+          '2026-07-19T12:00:00.000Z'
+        ),
+        (
+          'completion-two',
+          'cityquest-local-demo-actor',
+          'route-jaen-echoes-of-stone',
+          'objective-catedral-de-jaen-estatua-san-fernando',
+          'mock_visual',
+          'within_radius',
+          'passed',
+          '2026-07-19T12:01:00.000Z',
+          '2026-07-19T12:01:00.000Z',
+          '2026-07-19T12:01:00.000Z'
+        );
+    `);
+
+    const completionCount = database
+      .prepare(
+        `
+          SELECT COUNT(*) AS count
+          FROM objective_completions
+          WHERE actor_id = 'cityquest-local-demo-actor'
+            AND objective_id = 'objective-catedral-de-jaen-estatua-san-fernando'
+        `,
+      )
+      .get() as { count: number };
+
+    expect(completionCount.count).toBe(1);
 
     database.close();
   });
@@ -459,7 +567,7 @@ describe('initial content schema migration', () => {
           'Find the statue of Saint Ferdinand, the Christian king linked to the conquest of Jaén and one of the key historical figures behind the city’s medieval memory.',
         difficulty: 'easy',
         display_order: 0,
-        gps_radius_meters: 20,
+        gps_radius_meters: 700,
         id: 'objective-catedral-de-jaen-estatua-san-fernando',
         indoor_mode: 0,
         poi_id: 'poi-catedral-de-jaen',
@@ -473,7 +581,7 @@ describe('initial content schema migration', () => {
           'Find the small monkey sculpture wearing a turban on the exterior of Jaén Cathedral, one of the building’s strangest and most memorable hidden details.',
         difficulty: 'hard',
         display_order: 1,
-        gps_radius_meters: 3,
+        gps_radius_meters: 700,
         id: 'objective-catedral-de-jaen-mona-catedral-jaen',
         indoor_mode: 0,
         poi_id: 'poi-catedral-de-jaen',
@@ -487,7 +595,7 @@ describe('initial content schema migration', () => {
           'Find the wooden panel inside the choir stalls depicting Saint Catherine, a small decorative detail hidden among the carved seats of Jaén Cathedral.',
         difficulty: 'medium',
         display_order: 2,
-        gps_radius_meters: 5,
+        gps_radius_meters: 700,
         id: 'objective-catedral-de-jaen-placa-santa-catalina-coro',
         indoor_mode: 1,
         poi_id: 'poi-catedral-de-jaen',
@@ -501,7 +609,7 @@ describe('initial content schema migration', () => {
           'Find the cathedral organ, one of the most recognisable interior features of Jaén Cathedral, standing out through its pipes, scale and decorative presence.',
         difficulty: 'easy',
         display_order: 3,
-        gps_radius_meters: 12,
+        gps_radius_meters: 700,
         id: 'objective-catedral-de-jaen-organo-catedral-jaen',
         indoor_mode: 1,
         poi_id: 'poi-catedral-de-jaen',
@@ -515,7 +623,7 @@ describe('initial content schema migration', () => {
           'Find the tomb of Don Alonso Suárez de la Fuente del Sauce, known as El Insepulto, one of the most intriguing funerary details inside Jaén Cathedral.',
         difficulty: 'hard',
         display_order: 4,
-        gps_radius_meters: 3,
+        gps_radius_meters: 700,
         id: 'objective-catedral-de-jaen-tumba-don-alonso-suarez',
         indoor_mode: 1,
         poi_id: 'poi-catedral-de-jaen',
@@ -529,7 +637,7 @@ describe('initial content schema migration', () => {
           'Find the exterior façade of the Palace of Villardompardo, the historic building that houses the Arab Baths of Jaén beneath its walls.',
         difficulty: 'easy',
         display_order: 0,
-        gps_radius_meters: 20,
+        gps_radius_meters: 700,
         id: 'objective-banos-arabes-jaen-fachada-palacio-villardompardo',
         indoor_mode: 0,
         poi_id: 'poi-banos-arabes-jaen',
@@ -543,7 +651,7 @@ describe('initial content schema migration', () => {
           'Find the original paintings in the entrance area of the Arab Baths, before reaching the cold room, where visitors once prepared to access the bathing spaces.',
         difficulty: 'easy',
         display_order: 1,
-        gps_radius_meters: 3,
+        gps_radius_meters: 700,
         id: 'objective-banos-arabes-jaen-pinturas-recibidor-banos-arabes',
         indoor_mode: 1,
         poi_id: 'poi-banos-arabes-jaen',
@@ -557,7 +665,7 @@ describe('initial content schema migration', () => {
           'Find the central pool in the warm room of the Arab Baths, the space where visitors would have spent most of their time during the bathing ritual.',
         difficulty: 'easy',
         display_order: 2,
-        gps_radius_meters: 3,
+        gps_radius_meters: 700,
         id: 'objective-banos-arabes-jaen-piscina-sala-templada-banos-arabes',
         indoor_mode: 1,
         poi_id: 'poi-banos-arabes-jaen',
@@ -571,7 +679,7 @@ describe('initial content schema migration', () => {
           'Find the columns in the king’s wing of the Arab Baths, the place linked to the death of King Ali and the legend of his lingering ghost.',
         difficulty: 'medium',
         display_order: 3,
-        gps_radius_meters: 2,
+        gps_radius_meters: 700,
         id: 'objective-banos-arabes-jaen-columnas-ala-rey-ali',
         indoor_mode: 1,
         poi_id: 'poi-banos-arabes-jaen',
@@ -585,7 +693,7 @@ describe('initial content schema migration', () => {
           'Find the water jars in the hot room of the Arab Baths, the most therapeutic space of the complex, associated with medicinal bathing practices inspired by Galenic tradition.',
         difficulty: 'easy',
         display_order: 4,
-        gps_radius_meters: 3,
+        gps_radius_meters: 700,
         id: 'objective-banos-arabes-jaen-tinajas-agua-sala-caliente',
         indoor_mode: 1,
         poi_id: 'poi-banos-arabes-jaen',

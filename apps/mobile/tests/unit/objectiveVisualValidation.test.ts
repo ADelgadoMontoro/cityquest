@@ -9,7 +9,7 @@ const currentObjective: MobileCurrentObjectiveSnapshot = {
     description: 'Find the statue.',
     difficulty: 'easy',
     displayOrder: 0,
-    gpsRadiusMeters: 20,
+    gpsRadiusMeters: 700,
     indoorMode: false,
     slug: 'estatua-san-fernando',
     targetType: 'statue',

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { CurrentObjectiveScreen } from '@/screens/CurrentObjectiveScreen';
 import { DestinationsScreen } from '@/screens/DestinationsScreen';
 import { ObjectiveRewardScreen } from '@/screens/ObjectiveRewardScreen';
+import { PoiObjectivesScreen } from '@/screens/PoiObjectivesScreen';
 import { RouteDetailScreen } from '@/screens/RouteDetailScreen';
 import { WelcomeScreen } from '@/screens/WelcomeScreen';
 import type { AppRoute } from '@/types/navigation';
@@ -50,6 +51,24 @@ export function AppNavigator(): React.JSX.Element {
     return (
       <RouteDetailScreen
         onBack={goBack}
+        onOpenPoiObjectives={(routeSlug, poiSlug) =>
+          navigate({
+            name: 'poiObjectives',
+            params: {
+              poiSlug,
+              routeSlug,
+            },
+          })
+        }
+        routeSlug={currentRoute.params.routeSlug}
+      />
+    );
+  }
+
+  if (currentRoute.name === 'poiObjectives') {
+    return (
+      <PoiObjectivesScreen
+        onBack={goBack}
         onOpenCurrentObjective={(routeSlug, objectiveSlug) =>
           navigate({
             name: 'currentObjective',
@@ -59,6 +78,18 @@ export function AppNavigator(): React.JSX.Element {
             },
           })
         }
+        onOpenObjectiveReward={(routeSlug, objectiveSlug) =>
+          navigate({
+            name: 'objectiveReward',
+            params: {
+              backLabel: 'Back to Objectives',
+              entryMode: 'direct',
+              objectiveSlug,
+              routeSlug,
+            },
+          })
+        }
+        poiSlug={currentRoute.params.poiSlug}
         routeSlug={currentRoute.params.routeSlug}
       />
     );
@@ -87,6 +118,7 @@ export function AppNavigator(): React.JSX.Element {
   if (currentRoute.name === 'objectiveReward') {
     return (
       <ObjectiveRewardScreen
+        backLabel={currentRoute.params.backLabel}
         entryMode={currentRoute.params.entryMode}
         objectiveSlug={currentRoute.params.objectiveSlug}
         onBack={goBack}
