@@ -18,8 +18,10 @@ import {
   captureObjectiveImage,
   selectObjectiveImage,
 } from '@/services/objectiveImageCapture';
+import { validateObjectiveImageMock } from '@/services/objectiveVisualValidation';
 import type { MobileObjectiveCaptureAsset } from '@/types/objectiveCapture';
 import type { MobileObjectiveGpsValidationResult } from '@/types/objectiveLocation';
+import type { MobileObjectiveVisualValidationResult } from '@/types/objectiveVisualValidation';
 import { validateObjectiveGpsRadius } from '@/services/objectiveLocationValidation';
 import type { MobileCurrentObjectiveSnapshot } from '@/types/route';
 
@@ -52,6 +54,9 @@ export function CurrentObjectiveScreen({
   const [gpsError, setGpsError] = useState<string | null>(null);
   const [gpsValidation, setGpsValidation] = useState<MobileObjectiveGpsValidationResult | null>(null);
   const [isCheckingLocation, setIsCheckingLocation] = useState(false);
+  const [visualValidation, setVisualValidation] =
+    useState<MobileObjectiveVisualValidationResult | null>(null);
+  const [isRunningVisualMock, setIsRunningVisualMock] = useState(false);
 
   async function loadCurrentObjective() {
     setErrorMessage(null);
@@ -82,6 +87,8 @@ export function CurrentObjectiveScreen({
 
       if (image) {
         setSelectedImage(image);
+        setVisualValidation(null);
+        setMockValidationError(null);
       }
     } catch (error) {
       setCaptureError(
@@ -103,6 +110,8 @@ export function CurrentObjectiveScreen({
 
       if (image) {
         setSelectedImage(image);
+        setVisualValidation(null);
+        setMockValidationError(null);
       }
     } catch (error) {
       setCaptureError(
@@ -119,6 +128,19 @@ export function CurrentObjectiveScreen({
     setCaptureError(null);
     setMockValidationError(null);
     setSelectedImage(null);
+    setVisualValidation(null);
+  }
+
+  function runVisualValidationMock() {
+    setMockValidationError(null);
+    setIsRunningVisualMock(true);
+
+    try {
+      const validation = validateObjectiveImageMock(currentObjective, selectedImage);
+      setVisualValidation(validation);
+    } finally {
+      setIsRunningVisualMock(false);
+    }
   }
 
   async function handleCheckLocation() {
@@ -152,7 +174,7 @@ export function CurrentObjectiveScreen({
   }
 
   async function runMockValidationFlow() {
-    if (!currentObjective || !selectedImage) {
+    if (!currentObjective || !selectedImage || visualValidation?.status !== 'passed') {
       return;
     }
 
@@ -213,6 +235,7 @@ export function CurrentObjectiveScreen({
     setGpsValidation(null);
     setMockValidationError(null);
     setSelectedImage(null);
+    setVisualValidation(null);
     void loadCurrentObjective();
   }, [objectiveSlug, routeSlug]);
 
@@ -279,8 +302,10 @@ export function CurrentObjectiveScreen({
   }
 
   const requiresGpsValidation = currentObjective.objective.gpsRadiusMeters !== null;
+  const hasPassedVisualValidation = visualValidation?.status === 'passed';
   const canRunMockValidation =
     selectedImage !== null &&
+    hasPassedVisualValidation &&
     (!requiresGpsValidation || gpsValidation?.status === 'within_radius');
 
   const gpsStatusText =
@@ -421,11 +446,47 @@ export function CurrentObjectiveScreen({
         </View>
 
         <View style={styles.supportCard}>
+          <Text style={styles.supportTitle}>Visual validation mock</Text>
+          <Text style={styles.supportBody}>
+            This local mock models the future image-recognition decision without uploading or
+            inspecting the photo. It only confirms that the objective has an image ready for the
+            next validation step.
+          </Text>
+
+          {visualValidation ? (
+            <Text
+              style={[
+                styles.metaText,
+                visualValidation.status === 'passed' && styles.successText,
+                visualValidation.status === 'blocked' && styles.warningText,
+              ]}
+            >
+              {visualValidation.message}
+              {visualValidation.status === 'passed'
+                ? ` Mock confidence: ${Math.round(visualValidation.confidence * 100)}%.`
+                : ''}
+            </Text>
+          ) : (
+            <Text style={styles.metaText}>
+              {selectedImage
+                ? 'Image ready. Run the mock to model the future visual decision.'
+                : 'Capture or choose an image before running the visual mock.'}
+            </Text>
+          )}
+
+          <PrimaryButton
+            disabled={!selectedImage || isRunningVisualMock}
+            label={isRunningVisualMock ? 'Running Visual Mock...' : 'Run Visual Mock'}
+            onPress={runVisualValidationMock}
+          />
+        </View>
+
+        <View style={styles.supportCard}>
           <Text style={styles.supportTitle}>Mock validation flow</Text>
           <Text style={styles.supportBody}>
-            This temporary action now assumes an image is ready and the user is geographically in
-            range when a radius exists. It still does not judge the photo, but it makes the future
-            GPS and visual validation seam much more concrete.
+            This temporary action now requires an image, an explicit visual mock pass, and an
+            in-range GPS check when a radius exists. It still does not judge the photo with real
+            recognition.
           </Text>
           {mockValidationError ? (
             <Text style={styles.errorText}>{mockValidationError}</Text>
@@ -433,6 +494,8 @@ export function CurrentObjectiveScreen({
             <Text style={styles.metaText}>
               {!selectedImage
                 ? 'Capture or choose an image first to unlock the temporary mocked-success transition.'
+                : !hasPassedVisualValidation
+                  ? 'Run the visual mock before opening the temporary reward flow.'
                 : requiresGpsValidation && gpsValidation?.status !== 'within_radius'
                   ? 'Run the GPS check, get inside the configured radius, and make sure the location reading is precise enough before using the temporary validation bridge.'
                   : 'The selected image stays local to the device for now. No completion is persisted yet.'}

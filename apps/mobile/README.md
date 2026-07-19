@@ -15,7 +15,7 @@ This bootstrap provides:
 - a minimal in-app navigation flow for the next mobile slice
 - a live destination selector backed by the Worker API
 - a live route detail screen backed by the Worker API
-- a live-backed current-objective screen with real image capture/selection and basic GPS checking
+- a live-backed current-objective screen with real image capture/selection, basic GPS checking, and mock visual validation
 - a live-backed unlocked-story screen fed by the Worker API
 - an initial folder structure for app growth
 - shared workspace scripts aligned with the monorepo
@@ -40,8 +40,9 @@ This flow is already aligned with the real backend slices implemented in `apps/a
 The destination selector, route detail screen, current-objective screen, and unlocked-story screen
 now all read the live Worker API. The current-objective view is still intentionally pre-gameplay:
 it shows the real objective context, allows the user to capture or choose a photo on device,
-checks whether the player is inside the configured GPS radius, and then runs a mocked-success
-transition into the reward flow without pretending that final visual validation already exists.
+checks whether the player is inside the configured GPS radius, runs a local mock visual check, and
+then transitions into the reward flow without pretending that real image recognition already
+exists.
 
 ## Local API Configuration
 
@@ -106,6 +107,7 @@ Current emphasis:
 - Worker payload mapping into mobile models
 - current objective derivation
 - unlocked content delivery flow
+- native image, GPS, and mock visual validation service behavior
 - edge cases such as `404` handling and safe defaults
 
 UI-heavy testing is intentionally kept for later once the gameplay flow stabilizes further.
